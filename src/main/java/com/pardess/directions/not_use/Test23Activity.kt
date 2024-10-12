@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.pardess.directions.presentation.theme.DirectionsTheme
+import com.pardess.directions.presentation.ui.theme.DirectionsTheme
 
-class MainActivity : ComponentActivity() {
+class Test23Activity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

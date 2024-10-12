@@ -69,8 +69,8 @@
 //import com.pardess.directions.R
 //import com.pardess.directions.domain.model.Paths
 //import com.pardess.directions.presentation.DirectionComponent
-//import com.pardess.directions.presentation.DirectionViewModel
-//import com.pardess.directions.presentation.Utils
+//import com.pardess.directions.presentation.viewmodel.DirectionViewModel
+//import com.pardess.directions.presentation.util.Utils
 //import com.pardess.directions.presentation.theme.DirectionsTheme
 //import dagger.hilt.android.AndroidEntryPoint
 //

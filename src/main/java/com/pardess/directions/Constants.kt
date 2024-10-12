@@ -1,6 +1,4 @@
-package com.pardess.directions.presentation
-
-import com.pardess.directions.BuildConfig
+package com.pardess.directions
 
 object Constants {
     const val KAKAO_MAP_KEY = BuildConfig.KAKAO_MAP_KEY

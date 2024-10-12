@@ -1,4 +1,4 @@
-package com.pardess.directions.presentation
+package com.pardess.directions.presentation.util
 
 import com.kakao.vectormap.LatLng
 import com.pardess.directions.domain.model.RouteInfo

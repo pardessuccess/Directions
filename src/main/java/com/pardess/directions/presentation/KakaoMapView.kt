@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -35,6 +34,7 @@ import com.orhanobut.logger.Logger
 import com.pardess.directions.R
 import com.pardess.directions.domain.model.TrafficState
 import com.pardess.directions.presentation.DataState.Success
+import com.pardess.directions.presentation.viewmodel.DirectionViewModel
 
 private lateinit var layer: RouteLineLayer
 private lateinit var multiStyleLine: com.kakao.vectormap.route.RouteLine
@@ -45,16 +45,19 @@ private val duration = 500
 
 @Composable
 fun KakaoMapView(
-    viewModel: DirectionViewModel
+    viewModel: DirectionViewModel,
+    mapView: MapView,
 ) {
     val context = LocalContext.current
-    val lifeCycleOwner = LocalLifecycleOwner.current
+
     val routeLineList = viewModel.routeLineList
     val dateState = viewModel.dataState
     val location = viewModel.route
 
     if (routeLineList.isNotEmpty()) {
-        if (dateState is Success) {
+        if (dateState is Success && dateState.successType == SuccessType.ROUTE_LINE_LIST) {
+            viewModel.dataState = DataState.Ready()
+            println("@@@@@@@ SUCCESS ${dateState.successType}")
             Logger.d(routeLineList.toString())
             drawRouteLine(
                 context = context,
@@ -72,7 +75,6 @@ fun KakaoMapView(
         }
     }
 
-    mapView = rememberMapViewWithLifecycle(context, lifeCycleOwner)
 
     Surface {
         AndroidView(
@@ -82,6 +84,7 @@ fun KakaoMapView(
                         object : MapLifeCycleCallback() {
                             // 지도 생명 주기 콜백: 지도가 파괴될 때 호출
                             override fun onMapDestroy() {
+                                println("@@@@@@@@@ Destroy")
                                 Toast.makeText(context, "Destroy", Toast.LENGTH_SHORT).show()
                             }
 
@@ -270,7 +273,10 @@ fun rememberMapViewWithLifecycle(context: Context, lifecycleOwner: LifecycleOwne
                 Lifecycle.Event.ON_CREATE -> {}
                 Lifecycle.Event.ON_START -> {}
                 Lifecycle.Event.ON_RESUME -> {
-                    mapView.resume()
+                    println("@@@@@ON RESUME")
+                    if (::mapView.isInitialized) {
+                        mapView.resume()
+                    }
                 }
 
                 Lifecycle.Event.ON_PAUSE -> {

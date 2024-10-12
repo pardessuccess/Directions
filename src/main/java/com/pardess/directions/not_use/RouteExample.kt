@@ -1,6 +1,8 @@
-package com.pardess.directions.domain.model
+package com.pardess.directions.not_use
 
 import com.kakao.vectormap.LatLng
+import com.pardess.directions.domain.model.RouteLine
+import com.pardess.directions.domain.model.TrafficState
 
 object RouteExample {
     val BusanSampleData = listOf(
@@ -115,21 +117,21 @@ object RouteExample {
                 LatLng.from(35.11951610817762, 129.04640055997055),
                 LatLng.from(35.11956079435293, 129.04644501424042)
             ),
-            trafficState = TrafficState. JAM
+            trafficState = TrafficState.JAM
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.11956079435293, 129.04644501424042),
                 LatLng.from(35.119791911741245, 129.04682097500694)
             ),
-            trafficState = TrafficState. JAM
+            trafficState = TrafficState.JAM
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.119791911741245, 129.04682097500694),
                 LatLng.from(35.119753206745465, 129.04712766043244)
             ),
-            trafficState = TrafficState. JAM
+            trafficState = TrafficState.JAM
         ),
         RouteLine(
             wayList = listOf(
@@ -144,14 +146,14 @@ object RouteExample {
                 LatLng.from(35.12426956894021, 129.04917127352454),
                 LatLng.from(35.124815561437586, 129.04961713174032)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.124815561437586, 129.04961713174032),
                 LatLng.from(35.12537729676489, 129.0503265136936)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -165,7 +167,7 @@ object RouteExample {
                 LatLng.from(35.12625975356192, 129.0545838528871),
                 LatLng.from(35.12633023437804, 129.05477127878245)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -175,7 +177,7 @@ object RouteExample {
                 LatLng.from(35.12709780338988, 129.0556479405109),
                 LatLng.from(35.127634088629975, 129.05617053471332)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -188,14 +190,14 @@ object RouteExample {
                 LatLng.from(35.13001838070327, 129.06286138278483),
                 LatLng.from(35.13003448211315, 129.06308103390148)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.13003448211315, 129.06308103390148),
                 LatLng.from(35.13008307281709, 129.06370707516342)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -221,7 +223,7 @@ object RouteExample {
                 LatLng.from(35.13686774995014, 129.06915014762635),
                 LatLng.from(35.136904862620355, 129.07209139887448)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -279,7 +281,7 @@ object RouteExample {
                 LatLng.from(35.14431127205602, 129.09061384283137),
                 LatLng.from(35.145874094355754, 129.0932355742626)
             ),
-            trafficState = TrafficState. JAM
+            trafficState = TrafficState.JAM
         ),
         RouteLine(
             wayList = listOf(
@@ -287,28 +289,28 @@ object RouteExample {
                 LatLng.from(35.145971948255955, 129.09337954745007),
                 LatLng.from(35.14717639256629, 129.09475647779465)
             ),
-            trafficState = TrafficState. JAM
+            trafficState = TrafficState.JAM
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.14717639256629, 129.09475647779465),
                 LatLng.from(35.14736437267054, 129.09490166229597)
             ),
-            trafficState = TrafficState. JAM
+            trafficState = TrafficState.JAM
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.14736437267054, 129.09490166229597),
                 LatLng.from(35.147731319493836, 129.09519191256862)
             ),
-            trafficState = TrafficState. JAM
+            trafficState = TrafficState.JAM
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.147731319493836, 129.09519191256862),
                 LatLng.from(35.149118381058024, 129.09630795884505)
             ),
-            trafficState = TrafficState. JAM
+            trafficState = TrafficState.JAM
         ),
         RouteLine(
             wayList = listOf(
@@ -332,35 +334,35 @@ object RouteExample {
                 LatLng.from(35.16361177588279, 129.10533854913072),
                 LatLng.from(35.16426660204079, 129.1056876850649)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.16426660204079, 129.1056876850649),
                 LatLng.from(35.16769353038323, 129.1074794307038)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.16769353038323, 129.1074794307038),
                 LatLng.from(35.168249711025666, 129.10777237827767)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.168249711025666, 129.10777237827767),
                 LatLng.from(35.1769514180691, 129.11232566873724)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.1769514180691, 129.11232566873724),
                 LatLng.from(35.179884854269474, 129.1138587398458)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -497,14 +499,14 @@ object RouteExample {
                 LatLng.from(35.17659658734317, 129.12439694462915),
                 LatLng.from(35.1765512182579, 129.12442925468935)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.1765512182579, 129.12442925468935),
                 LatLng.from(35.176487619999584, 129.1244832701986)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -513,7 +515,7 @@ object RouteExample {
                 LatLng.from(35.174852286557574, 129.12586593941657),
                 LatLng.from(35.17474250189202, 129.1260400741399)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -546,14 +548,14 @@ object RouteExample {
                 LatLng.from(35.17172763101316, 129.13036759432495),
                 LatLng.from(35.17071954045202, 129.13117695245737)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(35.17071954045202, 129.13117695245737),
                 LatLng.from(35.17051972424902, 129.13133884667846)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -790,7 +792,7 @@ object RouteExample {
                 LatLng.from(35.160393511861066, 129.14896887752053),
                 LatLng.from(35.16011844838346, 129.1494589305728)
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -999,14 +1001,14 @@ object RouteExample {
                 LatLng.from(37.54970186461925, 126.97175930915527),
                 LatLng.from(37.54951227394457, 126.9717166456792),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.54951227394457, 126.9717166456792),
                 LatLng.from(37.54876420161901, 126.97169297201255),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1212,14 +1214,14 @@ object RouteExample {
                 LatLng.from(37.53223213616772, 126.98968360714221),
                 LatLng.from(37.53189180991745, 126.98992579948816),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.53189180991745, 126.98992579948816),
                 LatLng.from(37.53042286947153, 126.9909525673588),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1227,7 +1229,7 @@ object RouteExample {
                 LatLng.from(37.53003749313808, 126.99119535467446),
                 LatLng.from(37.52982203958974, 126.99128876884153),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1270,21 +1272,21 @@ object RouteExample {
                 LatLng.from(37.52575411675283, 126.9918526507441),
                 LatLng.from(37.525270213236254, 126.99216462349924),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.525270213236254, 126.99216462349924),
                 LatLng.from(37.52435694251329, 126.99284438962),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.52435694251329, 126.99284438962),
                 LatLng.from(37.524231581838016, 126.9929365805354),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1293,7 +1295,7 @@ object RouteExample {
                 LatLng.from(37.523316281798614, 126.99337878047444),
                 LatLng.from(37.52303775985617, 126.99347302684758),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1304,14 +1306,14 @@ object RouteExample {
                 LatLng.from(37.51931343156519, 126.99417917980246),
                 LatLng.from(37.519035197630565, 126.9943073512162),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.519035197630565, 126.9943073512162),
                 LatLng.from(37.51869408985555, 126.99445899013483),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1378,7 +1380,7 @@ object RouteExample {
                 LatLng.from(37.503058340412764, 127.00266490765729),
                 LatLng.from(37.50276303124323, 127.0029063452731),
             ),
-            trafficState = TrafficState. JAM
+            trafficState = TrafficState.JAM
         ),
         RouteLine(
             wayList = listOf(
@@ -1386,21 +1388,21 @@ object RouteExample {
                 LatLng.from(37.50263775708037, 127.00300980083531),
                 LatLng.from(37.502244201209365, 127.00335433083164),
             ),
-            trafficState = TrafficState. JAM
+            trafficState = TrafficState.JAM
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.502244201209365, 127.00335433083164),
                 LatLng.from(37.50199307956403, 127.00349338713781),
             ),
-            trafficState = TrafficState. JAM
+            trafficState = TrafficState.JAM
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.50199307956403, 127.00349338713781),
                 LatLng.from(37.502186189916785, 127.00395452578462),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1502,7 +1504,7 @@ object RouteExample {
                 LatLng.from(37.50124958390654, 127.0190881027539),
                 LatLng.from(37.500756311312266, 127.0193659881784),
             ),
-            trafficState = TrafficState. JAM
+            trafficState = TrafficState.JAM
         ),
         RouteLine(
             wayList = listOf(
@@ -1695,14 +1697,14 @@ object RouteExample {
                 LatLng.from(37.44599044743705, 127.05594075449392),
                 LatLng.from(37.44493424430589, 127.05682422625601),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.44493424430589, 127.05682422625601),
                 LatLng.from(37.44426238964349, 127.05731861182126),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1712,21 +1714,21 @@ object RouteExample {
                 LatLng.from(37.43767030351666, 127.06231689817066),
                 LatLng.from(37.42889164374638, 127.07116045398679),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.42889164374638, 127.07116045398679),
                 LatLng.from(37.42849831848152, 127.07156077312257),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.42849831848152, 127.07156077312257),
                 LatLng.from(37.41686653952456, 127.08323872172886),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1734,63 +1736,63 @@ object RouteExample {
                 LatLng.from(37.41575807073399, 127.08438192676418),
                 LatLng.from(37.410080315927246, 127.09008778443673),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.410080315927246, 127.09008778443673),
                 LatLng.from(37.40868554368245, 127.0915053434431),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.40868554368245, 127.0915053434431),
                 LatLng.from(37.40817597091813, 127.09203110398764),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.40817597091813, 127.09203110398764),
                 LatLng.from(37.40713030806583, 127.0931506971049),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.40713030806583, 127.0931506971049),
                 LatLng.from(37.406799540174006, 127.09349355194763),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.406799540174006, 127.09349355194763),
                 LatLng.from(37.40670121059135, 127.09359639695644),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.40670121059135, 127.09359639695644),
                 LatLng.from(37.40652248437838, 127.09379057461179),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.40652248437838, 127.09379057461179),
                 LatLng.from(37.404188967139966, 127.0961793780722),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.404188967139966, 127.0961793780722),
                 LatLng.from(37.402979877016584, 127.09714268343168),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1802,56 +1804,56 @@ object RouteExample {
                 LatLng.from(37.39942024981575, 127.09945558332642),
                 LatLng.from(37.39881598258817, 127.09938375300901),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.39881598258817, 127.09938375300901),
                 LatLng.from(37.39801547510493, 127.09957404085957),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.39801547510493, 127.09957404085957),
                 LatLng.from(37.3976026521064, 127.09979357005872),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.3976026521064, 127.09979357005872),
                 LatLng.from(37.397370113223666, 127.1000222352213),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.397370113223666, 127.1000222352213),
                 LatLng.from(37.39727186346962, 127.10013635182497),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.39727186346962, 127.10013635182497),
                 LatLng.from(37.3970933834797, 127.10036436874783),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.3970933834797, 127.10036436874783),
                 LatLng.from(37.39657724833268, 127.10121759354453),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.39657724833268, 127.10121759354453),
                 LatLng.from(37.395947492731345, 127.10253521529613),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1860,7 +1862,7 @@ object RouteExample {
                 LatLng.from(37.39564304015691, 127.10278731200754),
                 LatLng.from(37.39562527733246, 127.10282140554048),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1874,7 +1876,7 @@ object RouteExample {
                 LatLng.from(37.39501095605719, 127.10379999824272),
                 LatLng.from(37.394637244111024, 127.10442560596098),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1902,28 +1904,28 @@ object RouteExample {
                 LatLng.from(37.39416621391096, 127.10528953254264),
                 LatLng.from(37.39431472944153, 127.10586374791716),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.39431472944153, 127.10586374791716),
                 LatLng.from(37.39449629457429, 127.10604229142072),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.39449629457429, 127.10604229142072),
                 LatLng.from(37.39458716240711, 127.10614285626038),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.39458716240711, 127.10614285626038),
                 LatLng.from(37.39490464448217, 127.1064214318113),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
@@ -1932,14 +1934,14 @@ object RouteExample {
                 LatLng.from(37.3956289385873, 127.106875884624),
                 LatLng.from(37.39587280431328, 127.10695204877287),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(
                 LatLng.from(37.39587280431328, 127.10695204877287),
                 LatLng.from(37.396054453109976, 127.10714189154415),
             ),
-            trafficState = TrafficState. NORMAL
+            trafficState = TrafficState.NORMAL
         ),
         RouteLine(
             wayList = listOf(

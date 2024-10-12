@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.kakao.vectormap.KakaoMapSdk
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
-import com.pardess.directions.presentation.Constants
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

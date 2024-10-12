@@ -1,4 +1,4 @@
-package com.pardess.directions.presentation
+package com.pardess.directions.presentation.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -15,6 +15,9 @@ import com.pardess.directions.domain.model.RouteLine
 import com.pardess.directions.domain.usecase.distance_time.GetRouteInfoUseCase
 import com.pardess.directions.domain.usecase.location.GetRouteListUseCase
 import com.pardess.directions.domain.usecase.route.GetRouteLineListUseCase
+import com.pardess.directions.presentation.DataState
+import com.pardess.directions.presentation.SuccessType
+import com.pardess.directions.presentation.util.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,11 +30,11 @@ class DirectionViewModel @Inject constructor(
     private val getRouteInfoUseCase: GetRouteInfoUseCase
 ) : ViewModel() {
 
-    var dataState by mutableStateOf<DataState>(DataState.Initial())
+    var dataState by mutableStateOf<DataState>(DataState.Ready())
         set
 
     init {
-        updateLocationList()
+        updateRouteList()
         dataState = DataState.Loading()
     }
 
@@ -44,17 +47,18 @@ class DirectionViewModel @Inject constructor(
     var locationList by mutableStateOf<List<Location>>(emptyList())
         private set
 
-    fun updateLocationList() = viewModelScope.launch {
+    private fun updateRouteList() = viewModelScope.launch {
         val data = getRouteListUseCase()
         Logger.d(data.data.toString())
         if (data is Result.Success) {
             locationList = data.data!!.locations
             dataState = DataState.Success(
-                message = "GET ROUTE LIST USE CASE"
+                successType = SuccessType.ROUTE_LIST
             )
         } else {
             locationList = emptyList()
-            dataState = DataState.Error(data.message.toString(), data.errorType)
+            dataState =
+                DataState.Error(data.message.toString(), data.errorCode, data.errorType)
         }
     }
 
@@ -69,23 +73,24 @@ class DirectionViewModel @Inject constructor(
         if (data is Result.Success) {
             routeInfo = data.data!!
             dataState = DataState.Success(
-                message = "GET ROUTE INFO USE CASE"
+                successType = SuccessType.ROUTE_INFO
             )
         } else {
             straightDistance = 0
             routeLineList = emptyList()
             routeInfo = RouteInfo(0, 0, 0, 0)
-            dataState = DataState.Error(data.message.toString(), data.errorType)
+            dataState = DataState.Error(data.message.toString(), data.errorCode, data.errorType)
         }
     }
 
     var routeLineList by mutableStateOf<List<RouteLine>>(emptyList())
         private set
 
-    fun updateRouteList(origin: String, destination: String) = viewModelScope.launch {
+    fun updateRouteLineList(origin: String, destination: String) = viewModelScope.launch {
         dataState = DataState.Loading()
         val data = getRouteLineListUseCase(origin = origin, destination = destination)
         Logger.d(data.toString())
+        println("@@@@@@@@@ updateRouteLineList")
         if (data is Result.Success) {
             routeLineList = data.data!!
             straightDistance = Utils.haversine(
@@ -93,54 +98,13 @@ class DirectionViewModel @Inject constructor(
                 data.data.last().wayList.last()
             )
             dataState = DataState.Success(
-                message = "GET ROUTELINE INFO USE CASE"
+                successType = SuccessType.ROUTE_LINE_LIST
             )
         } else {
             straightDistance = 0
             routeLineList = emptyList()
             routeInfo = RouteInfo(0, 0, 0, 0)
-            dataState = DataState.Error(data.message.toString(), data.errorType)
+            dataState = DataState.Error(data.message.toString(), data.errorCode, data.errorType)
         }
     }
-
-    var pathList by mutableStateOf<List<Location>>(emptyList())
-        private set
-
-
-//    fun loadPathList() = viewModelScope.launch {
-//        getPathList().let {
-////            pathList = it.locations
-//        }
-//        println("@@@@pathList $pathList")
-//    }
-//
-//    private val _routeLineList = MutableLiveData<List<RouteLines>>(emptyList())
-//    val routeLineList2: LiveData<List<RouteLines>> = _routeLineList
-//
-//    fun loadRouteLineList(origin: String, destination: String) = viewModelScope.launch {
-////        getRouteList(origin = origin, destination = destination).let {
-////            _routeLineList.value = it
-////            Logger.d(it.toString())
-////        }
-//    }
-//
-//    var routeList2 by mutableStateOf<List<RouteLines>>(emptyList())
-//        private set
-//
-//    fun loadRouteList(origin: String, destination: String) = viewModelScope.launch {
-////        getRouteList(origin = origin, destination = destination).let {
-////            routeList2 = it
-////        }
-////        println("@@@@routeList $routeList2")
-//    }
-//
-//    var routeInfo2 by mutableStateOf(RouteInfo(0, 0, 0, 0))
-//        private set
-//
-//    fun loadRouteInfo(origin: String, destination: String) = viewModelScope.launch {
-////        getRouteInfo(origin = origin, destination = destination).let {
-////            routeInfo2 = it
-////        }
-//    }
-
 }

@@ -1,4 +1,4 @@
-package com.pardess.directions.data
+package com.pardess.directions.data.mapper
 
 import com.kakao.vectormap.LatLng
 import com.pardess.directions.data.response.distance_time.RouteInfoDto

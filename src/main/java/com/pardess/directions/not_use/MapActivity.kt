@@ -3,32 +3,13 @@ package com.pardess.directions.not_use
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.component1
-import androidx.core.graphics.component2
 import com.kakao.vectormap.KakaoMap
-import com.kakao.vectormap.KakaoMapReadyCallback
-import com.kakao.vectormap.LatLng
-import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
-import com.kakao.vectormap.camera.CameraAnimation
-import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelLayer
-import com.kakao.vectormap.label.LabelOptions
-import com.kakao.vectormap.label.LabelStyle
-import com.kakao.vectormap.label.LabelStyles
-import com.kakao.vectormap.label.LabelTextBuilder
-import com.kakao.vectormap.label.LabelTextStyle
-import com.kakao.vectormap.label.LabelTransition
-import com.kakao.vectormap.label.Transition
 import com.kakao.vectormap.route.RouteLine
 import com.kakao.vectormap.route.RouteLineLayer
-import com.kakao.vectormap.route.RouteLineOptions
-import com.kakao.vectormap.route.RouteLineSegment
-import com.kakao.vectormap.route.RouteLineStyle
 import com.pardess.directions.data.response.distance_time.RouteInfoDto
 import com.pardess.directions.databinding.ActivityMainBinding
-import com.pardess.directions.domain.model.RouteExample
-import dagger.hilt.android.AndroidEntryPoint
 
 
 //@AndroidEntryPoint

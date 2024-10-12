@@ -1,4 +1,4 @@
-package com.pardess.directions.presentation.theme
+package com.pardess.directions.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build

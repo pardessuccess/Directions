@@ -4,11 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import com.pardess.directions.presentation.viewmodel.DirectionViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class NewActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
 
     private val viewModel by viewModels<DirectionViewModel>()
 
@@ -16,7 +17,8 @@ class NewActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DirectionApp(
-                viewModel = viewModel
+                viewModel = viewModel,
+                context = this@MainActivity
             )
         }
     }

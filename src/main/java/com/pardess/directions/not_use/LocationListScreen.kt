@@ -11,8 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.pardess.directions.presentation.DirectionComponent
-import com.pardess.directions.presentation.DirectionViewModel
+import com.pardess.directions.presentation.viewmodel.DirectionViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -24,7 +23,7 @@ fun LocationListScreen(
 
 
     LaunchedEffect(true) {
-        println("@@@" + viewModel.pathList.toString())
+//        println("@@@" + viewModel.pathList.toString())
     }
 
 
@@ -35,7 +34,7 @@ fun LocationListScreen(
                 .padding(top = it.calculateTopPadding())
         ) {
             LazyColumn() {
-                items(viewModel.pathList.size) { index ->
+//                items(viewModel.pathList.size) { index ->
 //                    DirectionComponent(
 //                        paths = Paths(
 //                            viewModel.pathList[index].destination,
@@ -46,7 +45,7 @@ fun LocationListScreen(
 //
 //                        }
 //                    )
-                }
+//                }
             }
         }
     }

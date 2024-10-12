@@ -1,6 +1,6 @@
 package com.pardess.directions.presentation
 
-import android.provider.ContactsContract.Data
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,9 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -33,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,33 +40,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.orhanobut.logger.Logger
 import com.pardess.directions.R
-import com.pardess.directions.data.Result
 import com.pardess.directions.data.response.location.Location
 import com.pardess.directions.domain.model.Route
 import com.pardess.directions.domain.model.RouteInfo
 import com.pardess.directions.not_use.clickWithCoroutine
 import com.pardess.directions.presentation.component.ErrorAlertDialog
-import com.pardess.directions.presentation.theme.DirectionsTheme
+import com.pardess.directions.presentation.ui.theme.DirectionsTheme
+import com.pardess.directions.presentation.util.Utils
+import com.pardess.directions.presentation.viewmodel.DirectionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DirectionApp(
-    viewModel: DirectionViewModel
+    viewModel: DirectionViewModel,
+    context: Context,
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val mapView = rememberMapViewWithLifecycle(context, lifecycleOwner)
+
     DirectionsTheme {
+
         Surface {
             var showBottomSheet by remember { mutableStateOf(false) }
 
             val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-            var count by remember { mutableIntStateOf(0) }
 
             val straightDistance = viewModel.straightDistance
 
@@ -81,7 +80,7 @@ fun DirectionApp(
             var showErrorDialog by remember { mutableStateOf(false) }
 
             if (dataState is DataState.Success) {
-                Logger.d("dataState" + dataState.toString())
+                Logger.d("dataState$dataState")
                 showBottomSheet = false
             } else if (dataState is DataState.Error) {
                 showErrorDialog = true
@@ -117,7 +116,8 @@ fun DirectionApp(
                             }
                         )
                         KakaoMapView(
-                            viewModel = viewModel
+                            viewModel = viewModel,
+                            mapView = mapView
                         )
                     }
                     NavigateInfoOverlay(
@@ -130,8 +130,9 @@ fun DirectionApp(
                     if (showErrorDialog) {
                         if (dataState is DataState.Error) {
                             ErrorAlertDialog(
+                                errorCode = dataState.errorCode.toString(),
                                 errorMessage = dataState.message,
-                                errorCode = dataState.errorType.toString(),
+                                route = viewModel.route,
                                 onDismiss = {
                                     showErrorDialog = false
                                 }
@@ -139,19 +140,14 @@ fun DirectionApp(
                         }
                     }
 
-//                    if (dataState is DataState.Loading) {
-//                        CircularProgressIndicator(
-//                            modifier = Modifier.align(Alignment.Center)
-//                        )
-//                    }
-
-
-
                     if (showBottomSheet) {
                         BottomSheetSection(
                             viewModel = viewModel,
                             locationList = locationList,
                             bottomSheetState = bottomSheetState,
+                            setBottomSheetState = {
+                                showBottomSheet = false
+                            }
                         )
                     }
                 }
@@ -304,11 +300,12 @@ fun BottomSheetSection(
     viewModel: DirectionViewModel,
     locationList: List<Location>,
     bottomSheetState: SheetState,
+    setBottomSheetState: (Boolean) -> Unit
 ) {
 
     ModalBottomSheet(
         onDismissRequest = {
-
+            setBottomSheetState(false)
         },
         sheetState = bottomSheetState,
         dragHandle = null,
@@ -348,7 +345,7 @@ fun BottomSheetSection(
                                         location.origin,
                                         location.destination,
                                     )
-                                    viewModel.updateRouteList(
+                                    viewModel.updateRouteLineList(
                                         location.origin,
                                         location.destination,
                                     )

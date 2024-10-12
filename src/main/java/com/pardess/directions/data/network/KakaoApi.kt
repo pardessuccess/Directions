@@ -1,6 +1,5 @@
 package com.pardess.directions.data.network
 
-import com.pardess.directions.presentation.Constants.KAKAO_MOBILITY_KEY
 import com.pardess.directions.data.response.distance_time.RouteInfoDto
 import com.pardess.directions.data.response.location.LocationListDto
 import com.pardess.directions.data.response.route.RouteListDto
