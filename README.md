@@ -45,6 +45,24 @@ domain
 
 presentation
 
+- component
+AlertDialog
+
+- main
+DirectionApp - 컴포즈 메인
+RouteBottomSheet - 출발지/목적지를 담고 있는 정보들을 담고 있는 BottomSheet
+RouteInfoOverlay - 경로 정보를 담고 있는 뷰
+SearchSection - 출발지, 목적지를 담고 있는 섹션
+
+- mapview
+KakaoMapView 카카오맵 뷰
+MapViewLifecycle - 맵뷰의 생명주기를 관리
+
+- util
+
+- viewmodel
+- ui.theme
+
 Kakaoapi에서
 
 총 세 가지의 함수를 호출하고 받아옵니다.
