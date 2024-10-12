@@ -87,5 +87,4 @@ class KakaoApiRepositoryImpl @Inject constructor(
         }
         return result
     }
-
 }

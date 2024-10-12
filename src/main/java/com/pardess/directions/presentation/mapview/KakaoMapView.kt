@@ -1,4 +1,4 @@
-package com.pardess.directions.presentation
+package com.pardess.directions.presentation.mapview
 
 import android.content.Context
 import android.widget.Toast
@@ -33,7 +33,9 @@ import com.kakao.vectormap.route.RouteLineStyle
 import com.orhanobut.logger.Logger
 import com.pardess.directions.R
 import com.pardess.directions.domain.model.TrafficState
+import com.pardess.directions.presentation.DataState
 import com.pardess.directions.presentation.DataState.Success
+import com.pardess.directions.presentation.SuccessType
 import com.pardess.directions.presentation.viewmodel.DirectionViewModel
 
 private lateinit var layer: RouteLineLayer
@@ -180,16 +182,6 @@ fun drawRouteLine(
         lng = routeSegmentList.last().lngs.last()
     )
 
-
-//    val cameraLatitude = (routeSegmentList[0].lats[0] + routeSegmentList.last().lats.last()) / 2
-//    val cameraLongitude =
-//        (routeSegmentList[0].lngs[0] + routeSegmentList.last().lngs.last()) / 2
-
-//    kakaoMap.moveCamera(
-//        CameraUpdateFactory.newCenterPosition(
-//            LatLng.from(cameraLatitude, cameraLongitude), 11
-//        )
-//    )
     kakaoMap.moveCamera(
         CameraUpdateFactory.fitMapPoints(pointsLatLng, 250), CameraAnimation.from(1000, true, true)
     )
@@ -260,45 +252,3 @@ private fun setLabelWithText(
     )
 }
 
-@Composable
-fun rememberMapViewWithLifecycle(context: Context, lifecycleOwner: LifecycleOwner): MapView {
-    val mapView = remember {
-        MapView(context)
-    }
-
-    DisposableEffect(lifecycleOwner) {
-        val lifecycle = lifecycleOwner.lifecycle
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_CREATE -> {}
-                Lifecycle.Event.ON_START -> {}
-                Lifecycle.Event.ON_RESUME -> {
-                    println("@@@@@ON RESUME")
-                    if (::mapView.isInitialized) {
-                        mapView.resume()
-                    }
-                }
-
-                Lifecycle.Event.ON_PAUSE -> {
-                    mapView.pause()
-                }
-
-                Lifecycle.Event.ON_STOP -> {}
-                Lifecycle.Event.ON_DESTROY -> {
-                    mapView.finish()
-                }
-
-                Lifecycle.Event.ON_ANY -> {}
-            }
-        }
-
-        lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycle.removeObserver(observer)
-            mapView.finish()
-        }
-    }
-
-    return mapView
-}
