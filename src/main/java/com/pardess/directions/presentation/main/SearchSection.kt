@@ -34,7 +34,7 @@ fun SearchSection(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight()
+            .height(130.dp)
             .background(Color(0xFF3D73FA)),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -46,11 +46,9 @@ fun SearchSection(
             Column(
                 modifier = Modifier
                     .background(Color(0xFF5284FA), shape = RoundedCornerShape(5.dp))
-
             ) {
                 var origin = viewModel.route.origin
                 var destination = viewModel.route.destination
-
                 val isEmpty = viewModel.route.origin.isEmpty()
 
                 var textColor = Color(0xFFFFFFFF)
@@ -95,19 +93,19 @@ fun SearchSection(
                 modifier = Modifier.align(Alignment.Center),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-
+                Spacer(modifier = Modifier.height(1.dp))
                 Icon(
                     painter = painterResource(R.drawable.ic_direction),
                     contentDescription = "ic_direction",
                     tint = Color.White,
                     modifier = Modifier.size(48.dp)
                 )
-                Spacer(Modifier.height(2.dp))
                 Text(
                     text = "길찾기",
                     color = Color.White,
                     fontSize = 16.sp
                 )
+                Spacer(modifier = Modifier.height(1.dp))
             }
         }
         Spacer(

@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.pardess.directions.presentation.main.DirectionApp
+import com.pardess.directions.presentation.mapview.rememberMapViewWithLifecycle
 import com.pardess.directions.presentation.viewmodel.DirectionViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,7 +20,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             DirectionApp(
                 viewModel = viewModel,
-                context = this@MainActivity
+                context = applicationContext,
             )
         }
     }

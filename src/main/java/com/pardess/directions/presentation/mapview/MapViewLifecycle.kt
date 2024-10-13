@@ -8,22 +8,25 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.kakao.vectormap.MapView
+import com.kakao.vectormap.graphics.IMapSurfaceView
 
 @Composable
 fun rememberMapViewWithLifecycle(context: Context, lifecycleOwner: LifecycleOwner): MapView {
-    val mapView = remember {
-        MapView(context)
-    }
+    val mapView: MapView = remember { MapView(context) }
 
     DisposableEffect(lifecycleOwner) {
         val lifecycle = lifecycleOwner.lifecycle
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_CREATE -> {}
+                Lifecycle.Event.ON_CREATE -> {
+                }
+
                 Lifecycle.Event.ON_START -> {}
                 Lifecycle.Event.ON_RESUME -> {
                     println("@@@@@ON RESUME")
-                    mapView.resume()
+                    if (mapView.surfaceView != null) {
+                        mapView.resume()
+                    }
                 }
 
                 Lifecycle.Event.ON_PAUSE -> {
@@ -34,7 +37,6 @@ fun rememberMapViewWithLifecycle(context: Context, lifecycleOwner: LifecycleOwne
                 Lifecycle.Event.ON_DESTROY -> {
                     mapView.finish()
                 }
-
                 Lifecycle.Event.ON_ANY -> {}
             }
         }

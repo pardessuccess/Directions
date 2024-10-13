@@ -4,13 +4,12 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
@@ -19,32 +18,25 @@ import com.kakao.vectormap.MapView
 import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelLayer
-import com.kakao.vectormap.label.LabelOptions
-import com.kakao.vectormap.label.LabelStyle
-import com.kakao.vectormap.label.LabelStyles
-import com.kakao.vectormap.label.LabelTextBuilder
-import com.kakao.vectormap.label.LabelTextStyle
-import com.kakao.vectormap.label.LabelTransition
-import com.kakao.vectormap.label.Transition
+import com.kakao.vectormap.route.RouteLine
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
-import com.kakao.vectormap.route.RouteLineSegment
-import com.kakao.vectormap.route.RouteLineStyle
 import com.orhanobut.logger.Logger
 import com.pardess.directions.R
-import com.pardess.directions.domain.model.TrafficState
+import com.pardess.directions.data.ResponseType
+import com.pardess.directions.domain.usecase.mapview.SetLabelWithTextUseCase
 import com.pardess.directions.presentation.DataState
 import com.pardess.directions.presentation.DataState.Success
-import com.pardess.directions.presentation.SuccessType
+import com.pardess.directions.presentation.util.Utils.convertToLatLngPoints
+import com.pardess.directions.presentation.util.Utils.convertToRouteSegmentList
 import com.pardess.directions.presentation.viewmodel.DirectionViewModel
 
-private lateinit var layer: RouteLineLayer
-private lateinit var multiStyleLine: com.kakao.vectormap.route.RouteLine
+private lateinit var routeLineLayer: RouteLineLayer
+private lateinit var multiStyleLine: RouteLine
 private lateinit var labelLayer: LabelLayer
 private lateinit var kakaoMap: KakaoMap
-private lateinit var mapView: MapView
-private val duration = 500
 
+@Stable
 @Composable
 fun KakaoMapView(
     viewModel: DirectionViewModel,
@@ -57,26 +49,29 @@ fun KakaoMapView(
     val location = viewModel.route
 
     if (routeLineList.isNotEmpty()) {
-        if (dateState is Success && dateState.successType == SuccessType.ROUTE_LINE_LIST) {
-            viewModel.dataState = DataState.Ready()
-            println("@@@@@@@ SUCCESS ${dateState.successType}")
+        if (dateState is Success && dateState.responseType == ResponseType.ROUTE_LINE_LIST) {
+            viewModel.dataState = DataState.Ready
+            println("@@@@@@@ SUCCESS ${dateState.responseType}")
             Logger.d(routeLineList.toString())
             drawRouteLine(
                 context = context,
                 routeLineList = routeLineList,
+                viewModel = viewModel,
                 origin = location.origin,
                 destination = location.destination
             )
         }
     }
+
     if (dateState is DataState.Error) {
-        labelLayer.remove(labelLayer.getLabel("start_label"))
-        labelLayer.remove(labelLayer.getLabel("end_label"))
-        if (::multiStyleLine.isInitialized) {
-            layer.remove(multiStyleLine)
+        if (viewModel.labelLayer != null) {
+            viewModel.labelLayer!!.remove(viewModel.labelLayer!!.getLabel(stringResource(R.string.origin_label_id)))
+            viewModel.labelLayer!!.remove(viewModel.labelLayer!!.getLabel(stringResource(R.string.destination_label_id)))
+        }
+        if (viewModel.multiStyleLine != null) {
+            viewModel.routeLineLayer!!.remove(viewModel.multiStyleLine)
         }
     }
-
 
     Surface {
         AndroidView(
@@ -86,7 +81,6 @@ fun KakaoMapView(
                         object : MapLifeCycleCallback() {
                             // 지도 생명 주기 콜백: 지도가 파괴될 때 호출
                             override fun onMapDestroy() {
-                                println("@@@@@@@@@ Destroy")
                                 Toast.makeText(context, "Destroy", Toast.LENGTH_SHORT).show()
                             }
 
@@ -97,12 +91,13 @@ fun KakaoMapView(
                         },
                         object : KakaoMapReadyCallback() {
                             override fun onMapReady(map: KakaoMap) {
-                                kakaoMap = map
+                                viewModel.kakaoMap = map
                                 Toast.makeText(context, "Ready", Toast.LENGTH_SHORT).show()
-                                labelLayer = kakaoMap.labelManager!!.layer!!
-                                layer = kakaoMap.routeLineManager!!.layer
+                                viewModel.labelLayer = viewModel.kakaoMap!!.labelManager!!.layer!!
+                                viewModel.routeLineLayer =
+                                    viewModel.kakaoMap!!.routeLineManager!!.layer
 
-                                kakaoMap.moveCamera(
+                                viewModel.kakaoMap!!.moveCamera(
                                     CameraUpdateFactory.newCenterPosition(
                                         LatLng.from(37.55595957732287, 126.97227318174524), 16
                                     )
@@ -119,136 +114,140 @@ fun KakaoMapView(
 
 fun drawRouteLine(
     context: Context,
+    viewModel: DirectionViewModel,
     routeLineList: List<com.pardess.directions.domain.model.RouteLine>,
     origin: String,
     destination: String,
 ) {
-    val routeSegmentList = mutableListOf<RouteLineSegment>()
-    println("@@@@@ drawRouteLine()")
 
-    if (::multiStyleLine.isInitialized) {
-        layer.remove(multiStyleLine)
+    val latLngPoints = routeLineList.convertToLatLngPoints()
+
+    val routeSegmentList = routeLineList.convertToRouteSegmentList(context)
+
+    if (viewModel.multiStyleLine != null) {
+        viewModel.routeLineLayer!!.remove(viewModel.multiStyleLine)
     }
 
-    val pointsLatLng = routeLineList.flatMap { routeLines ->
-        routeLines.wayList
-    }.toTypedArray()
-
-    if (::labelLayer.isInitialized) {
-        labelLayer.remove(labelLayer.getLabel("start_label"))
-        labelLayer.remove(labelLayer.getLabel("end_label"))
-    }
-
-    routeLineList.forEach {
-        val style = when (it.trafficState) {
-            TrafficState.UNKNOWN -> TrafficState.UNKNOWN.styleRes
-            TrafficState.JAM -> TrafficState.JAM.styleRes
-            TrafficState.DELAY -> TrafficState.DELAY.styleRes
-            TrafficState.SLOW -> TrafficState.SLOW.styleRes
-            TrafficState.NORMAL -> TrafficState.NORMAL.styleRes
-            TrafficState.BLOCK -> TrafficState.BLOCK.styleRes
-        }
-
-        val routeLineStyle = RouteLineStyle.from(context, style)
-
-        routeSegmentList.add(
-            RouteLineSegment.from(
-                it.wayList, routeLineStyle
-            )
-        )
+    if (viewModel.labelLayer != null) {
+        viewModel.labelLayer!!.remove(viewModel.labelLayer!!.getLabel(context.getString(R.string.origin_label_id)))
+        viewModel.labelLayer!!.remove(viewModel.labelLayer!!.getLabel(context.getString(R.string.destination_label_id)))
     }
 
     val options = RouteLineOptions.from(
         routeSegmentList
     )
 
-    multiStyleLine = layer.addRouteLine(options)
+    viewModel.multiStyleLine = viewModel.routeLineLayer!!.addRouteLine(options)
 
-    setLabelWithText(
+    val setLabelWithTextUseCase =
+        SetLabelWithTextUseCase(viewModel.kakaoMap!!, viewModel.labelLayer!!)
+
+    setLabelWithTextUseCase.execute(
         context = context,
-        labelId = "start_label",
-        text = "출발",
+        labelId = context.getString(R.string.origin_label_id),
+        text = context.getString(R.string.origin_label_text),
         locationName = origin,
         lat = routeSegmentList[0].lats[0],
         lng = routeSegmentList[0].lngs[0]
     )
 
-    setLabelWithText(
+    setLabelWithTextUseCase.execute(
         context = context,
-        labelId = "end_label",
-        text = "도착",
+        labelId = context.getString(R.string.destination_label_id),
+        text = context.getString(R.string.destination_label_text),
         locationName = destination,
         lat = routeSegmentList.last().lats.last(),
         lng = routeSegmentList.last().lngs.last()
     )
 
-    kakaoMap.moveCamera(
-        CameraUpdateFactory.fitMapPoints(pointsLatLng, 250), CameraAnimation.from(1000, true, true)
+    viewModel.kakaoMap!!.moveCamera(
+        CameraUpdateFactory.fitMapPoints(latLngPoints, 250), CameraAnimation.from(1000, true, true)
     )
 }
 
+//
+//private fun setLabelWithText(
+//    context: Context,
+//    labelId: String,
+//    text: String,
+//    locationName: String,
+//    lat: Double,
+//    lng: Double
+//) {
+//    val pos = LatLng.from(lat, lng)
+//
+//    val marker = when (text) {
+//        context.getString(R.string.origin_label_text) -> {
+//            Triple(
+//                R.drawable.blue_marker,
+//                LabelTextStyle.from(context, R.style.labelTextStyleBlack),
+//                LabelTextStyle.from(context, R.style.labelTextStyleBlue)
+//            )
+//        }
+//
+//        context.getString(R.string.destination_label_text) -> {
+//            Triple(
+//                R.drawable.pink_marker,
+//                LabelTextStyle.from(context, R.style.labelTextStyleBlack),
+//                LabelTextStyle.from(context, R.style.labelTextStyleRed)
+//            )
+//        }
+//
+//        else -> {
+//            Triple(
+//                R.drawable.green_marker,
+//                LabelTextStyle.from(context, R.style.labelTextStyleBlack),
+//                LabelTextStyle.from(context, R.style.labelTextStyleBlue)
+//            )
+//        }
+//    }
+//
+//    val styles = kakaoMap.labelManager
+//        ?.addLabelStyles(
+//            LabelStyles.from(
+//                LabelStyle.from(
+//                    marker.first
+//                ).setTextStyles(
+//                    marker.second,
+//                    marker.third
+//                )
+//                    .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
+//            )
+//        )
+//
+//    labelLayer.addLabel(
+//        LabelOptions.from(labelId, pos).setStyles(styles)
+//            .setTexts(
+//                LabelTextBuilder().setTexts(
+//                    text,
+//                    locationName,
+//                )
+//            )
+//    )
+//    kakaoMap.moveCamera(
+//        CameraUpdateFactory.newCenterPosition(pos, 15),
+//        CameraAnimation.from(duration)
+//    )
+//}
+//
 
-private fun setLabelWithText(
-    context: Context,
-    labelId: String,
-    text: String,
-    locationName: String,
-    lat: Double,
-    lng: Double
-) {
-    val pos = LatLng.from(lat, lng)
+//    val routeSegmentList = mutableListOf<RouteLineSegment>()
 
-    val marker = when (text) {
-        "출발" -> {
-            Triple(
-                R.drawable.blue_marker,
-                LabelTextStyle.from(context, R.style.labelTextStyleBlack),
-                LabelTextStyle.from(context, R.style.labelTextStyleBlue)
-            )
-        }
-
-        "도착" -> {
-            Triple(
-                R.drawable.pink_marker,
-                LabelTextStyle.from(context, R.style.labelTextStyleBlack),
-                LabelTextStyle.from(context, R.style.labelTextStyleRed)
-            )
-        }
-
-        else -> {
-            Triple(
-                R.drawable.green_marker,
-                LabelTextStyle.from(context, R.style.labelTextStyleBlack),
-                LabelTextStyle.from(context, R.style.labelTextStyleBlue)
-            )
-        }
-    }
-
-    val styles = kakaoMap.labelManager
-        ?.addLabelStyles(
-            LabelStyles.from(
-                LabelStyle.from(
-                    marker.first
-                ).setTextStyles(
-                    marker.second,
-                    marker.third
-                )
-                    .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
-            )
-        )
-
-    labelLayer.addLabel(
-        LabelOptions.from(labelId, pos).setStyles(styles)
-            .setTexts(
-                LabelTextBuilder().setTexts(
-                    text,
-                    locationName,
-                )
-            )
-    )
-    kakaoMap.moveCamera(
-        CameraUpdateFactory.newCenterPosition(pos, 15),
-        CameraAnimation.from(duration)
-    )
-}
-
+//    routeLineList.forEach {
+//        val style = when (it.trafficState) {
+//            TrafficState.UNKNOWN -> TrafficState.UNKNOWN.styleRes
+//            TrafficState.JAM -> TrafficState.JAM.styleRes
+//            TrafficState.DELAY -> TrafficState.DELAY.styleRes
+//            TrafficState.SLOW -> TrafficState.SLOW.styleRes
+//            TrafficState.NORMAL -> TrafficState.NORMAL.styleRes
+//            TrafficState.BLOCK -> TrafficState.BLOCK.styleRes
+//        }
+//
+//        val routeLineStyle = RouteLineStyle.from(context, style)
+//
+//        routeSegmentList.add(
+//            RouteLineSegment.from(
+//                it.wayList, routeLineStyle
+//            )
+//        )
+//    }

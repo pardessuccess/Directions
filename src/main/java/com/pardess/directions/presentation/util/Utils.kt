@@ -1,7 +1,12 @@
 package com.pardess.directions.presentation.util
 
+import android.content.Context
 import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.route.RouteLineSegment
+import com.kakao.vectormap.route.RouteLineStyle
 import com.pardess.directions.domain.model.RouteInfo
+import com.pardess.directions.domain.model.RouteLine
+import com.pardess.directions.domain.model.TrafficState
 import kotlin.math.*
 
 object Utils {
@@ -22,7 +27,6 @@ object Utils {
         val distanceString = StringBuilder("$text : ")
         distanceString.append(String.format("%,d", number))
         distanceString.append(" m")
-
         return distanceString.toString().trim()
     }
 
@@ -61,9 +65,39 @@ object Utils {
                 cos(phi1) * cos(phi2) *
                 sin(deltaLambda / 2) * sin(deltaLambda / 2)
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
         val distance = R * c // 두 지점 사이의 직선 거리 (미터)
         return distance.toInt()
+    }
+
+    fun List<RouteLine>.convertToRouteSegmentList(context: Context): List<RouteLineSegment> {
+        val routeSegmentList = mutableListOf<RouteLineSegment>()
+
+        this.forEach {
+            val style = when (it.trafficState) {
+                TrafficState.UNKNOWN -> TrafficState.UNKNOWN.styleRes
+                TrafficState.JAM -> TrafficState.JAM.styleRes
+                TrafficState.DELAY -> TrafficState.DELAY.styleRes
+                TrafficState.SLOW -> TrafficState.SLOW.styleRes
+                TrafficState.NORMAL -> TrafficState.NORMAL.styleRes
+                TrafficState.BLOCK -> TrafficState.BLOCK.styleRes
+            }
+
+            val routeLineStyle = RouteLineStyle.from(context, style)
+
+            routeSegmentList.add(
+                RouteLineSegment.from(
+                    it.wayList, routeLineStyle
+                )
+            )
+        }
+
+        return routeSegmentList
+    }
+
+    fun List<RouteLine>.convertToLatLngPoints(): Array<LatLng> {
+        return this.flatMap { routeLines ->
+            routeLines.wayList
+        }.toTypedArray()
     }
 
 }

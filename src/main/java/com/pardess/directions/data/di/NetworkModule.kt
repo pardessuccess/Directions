@@ -51,18 +51,21 @@ object NetworkModule {
 
         val headerInterceptor = Interceptor { chain ->
             val original = chain.request()
-
             // Authorization 헤더 추가
             val requestBuilder = original.newBuilder()
                 .header("Authorization", Constants.KAKAO_MOBILITY_KEY)
-                .header("Content-Type", "application/json")
 
             val request = requestBuilder.build()
             chain.proceed(request)
         }
 
         return OkHttpClient.Builder().addInterceptor(headerInterceptor)
-            .addInterceptor(loggingInterceptor).build()
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor { chain ->
+                Thread.sleep(2000) // 3초 지연 추가
+                chain.proceed(chain.request())
+            }
+            .build()
     }
 
 

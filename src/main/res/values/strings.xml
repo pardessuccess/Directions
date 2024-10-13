@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">카카오 길잡이</string>
+    <string name="origin_label_id">origin_label</string>
+    <string name="destination_label_id">destination_label</string>
+    <string name="origin_label_text">출발</string>
+    <string name="destination_label_text">도착</string>
 </resources>

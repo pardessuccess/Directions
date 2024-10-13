@@ -9,18 +9,13 @@ import retrofit2.http.Query
 
 interface KakaoApi {
 
-//    @Headers(
-//        "Authorization: ${Constants.KAKAO_MOBILITY_KEY}"
-//    )
 
     @GET("api/v1/coding-assignment/locations")
     suspend fun getLocations(
-//        @Header("Authorization") authToken: String = KAKAO_MOBILITY_KEY
     ): LocationListDto
 
     @GET("api/v1/coding-assignment/routes")
     suspend fun getRoutes(
-//        @Header("Authorization") authToken: String = KAKAO_MOBILITY_KEY,
         @Header("Content-Type") contentType: String = "application/json",
         @Query("origin") origin: String,
         @Query("destination") destination: String
@@ -28,7 +23,6 @@ interface KakaoApi {
 
     @GET("api/v1/coding-assignment/distance-time")
     suspend fun getDistanceTime(
-//        @Header("Authorization") authToken: String = KAKAO_MOBILITY_KEY,
         @Header("Content-Type") contentType: String = "application/json",
         @Query("origin") origin: String,
         @Query("destination") destination: String

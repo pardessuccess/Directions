@@ -70,6 +70,9 @@ android {
 
 dependencies {
 
+    //Splash Api
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     //Hilt
     implementation("com.google.dagger:hilt-android:2.48")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
@@ -80,6 +83,9 @@ dependencies {
 
     //Logger
     implementation("com.orhanobut:logger:2.2.0")
+
+    //Accompanist
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 
     //KakaoMap
     implementation("com.kakao.maps.open:android:2.11.9")

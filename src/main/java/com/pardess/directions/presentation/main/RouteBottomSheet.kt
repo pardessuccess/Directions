@@ -1,6 +1,7 @@
 package com.pardess.directions.presentation.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,8 +17,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -29,11 +33,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pardess.directions.R
-import com.pardess.directions.data.response.location.Location
 import com.pardess.directions.domain.model.Route
 import com.pardess.directions.not_use.clickWithCoroutine
 import com.pardess.directions.presentation.viewmodel.DirectionViewModel
@@ -43,7 +47,7 @@ import com.pardess.directions.presentation.viewmodel.DirectionViewModel
 @Composable
 fun RouteBottomSheet(
     viewModel: DirectionViewModel,
-    locationList: List<Location>,
+    routeList: List<Route>,
     bottomSheetState: SheetState,
     setBottomSheetState: (Boolean) -> Unit
 ) {
@@ -53,7 +57,9 @@ fun RouteBottomSheet(
         },
         sheetState = bottomSheetState,
         dragHandle = null,
-        modifier = Modifier.statusBarsPadding(),
+        modifier = Modifier
+            .statusBarsPadding()
+            .padding(top = 90.dp),
     ) {
         Box(
             modifier = Modifier
@@ -66,49 +72,81 @@ fun RouteBottomSheet(
                 Column {
                     Spacer(
                         modifier = Modifier
-                            .height(22.dp)
+                            .height(16.dp)
                             .fillMaxWidth()
                             .background(
-                                Color(0xFF454545).copy(0.4f)
+                                Color(0xFFE6E6E6).copy(0.4f)
                             )
                     )
-                    LazyColumn(
-                        modifier = Modifier.background(
-                            Color(0xFF454545).copy(0.4f)
-                        )
-                    ) {
-                        items(locationList.size) { index ->
-
-                            val location = locationList[index]
-
-                            DirectionComponent(
-                                viewModel,
-                                {
-                                    println(location)
-                                    viewModel.updateRouteInfo(
-                                        location.origin,
-                                        location.destination,
+                    if (routeList.isNotEmpty()) {
+                        Box {
+                            LazyColumn(
+                                modifier = Modifier.background(
+                                    Color(0xFFE6E6E6).copy(0.4f)
+                                )
+                            ) {
+                                items(routeList.size) { index ->
+                                    RouteComponent(
+                                        viewModel,
+                                        { viewModel.routeSelected(index) },
+                                        Route(
+                                            routeList[index].origin,
+                                            routeList[index].destination,
+                                        ),
                                     )
-                                    viewModel.updateRouteLineList(
-                                        location.origin,
-                                        location.destination,
+                                }
+                            }
+                        }
+                    } else {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Column(
+                                modifier = Modifier.align(Alignment.Center),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "경로가 없습니다.",
+                                    fontSize = 22.sp
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(
+                                    onClick = {
+                                        viewModel.updateRouteList()
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        contentColor = Color.White,
+                                        containerColor = Color(0xFF5284FA)
                                     )
-                                },
-                                Route(
-                                    locationList[index].origin,
-                                    locationList[index].destination,
-                                ),
-                            )
-//                            if (locationList.size == index + 1) {
-//                                Spacer(
-//                                    modifier = Modifier
-//                                        .height(35.dp)
-//                                        .fillMaxWidth()
-//                                        .background(color = Color.Black.copy(0.5f))
-//                                )
-//                            }
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_refresh),
+                                            contentDescription = "refresh"
+                                        )
+                                        Text(
+                                            text = "경로 다시 조회",
+                                            fontSize = 22.sp
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
+                }
+            }
+            if (viewModel.isRouteListLoading || viewModel.isRouteInfoLoading || viewModel.isRouteLineListLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.3f)) // 배경 어둡게 처리
+                        .pointerInput(Unit) {} // 터치 이벤트 차단
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Color(0xFF5284FA)
+                    )
                 }
             }
         }
@@ -116,7 +154,7 @@ fun RouteBottomSheet(
 }
 
 @Composable
-fun DirectionComponent(
+fun RouteComponent(
     viewModel: DirectionViewModel,
     onClick: () -> Unit,
     route: Route,
@@ -131,12 +169,12 @@ fun DirectionComponent(
             .clickWithCoroutine(coroutineScope) {
                 onClick()
             },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(18.dp),
         elevation = CardDefaults.cardElevation(5.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 25.dp)
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.icon_car),

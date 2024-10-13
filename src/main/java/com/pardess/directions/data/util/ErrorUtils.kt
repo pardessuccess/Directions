@@ -2,25 +2,26 @@ package com.pardess.directions.data.util
 
 import android.util.Log
 import com.google.gson.Gson
-import com.pardess.directions.data.ErrorType
+import com.pardess.directions.data.ResponseType
+import com.pardess.directions.data.ExceptionType
 import com.pardess.directions.data.Result
 import com.pardess.directions.data.response.error.ErrorResponse
 import retrofit2.HttpException
 
 object ErrorUtils {
 
-    fun <T> httpExceptionToError(e: HttpException): Result.Error<T> {
-        val errorType = e.code().toErrorType()
-        val errorBody = e.response()?.errorBody()?.string()
-        var errorCode = 0
-        var errorMessage = ""
+    fun <T> HttpException.httpExceptionError(responseType: ResponseType): Result.Error<T> {
+        val exceptionType = this.code().exceptionType()
+        val errorBody = this.response()?.errorBody()?.string()
+        var httpExceptionCode = 0
+        var exceptionMessage = ""
 
         errorBody?.let {
             try {
                 val errorResponse = Gson().fromJson(it, ErrorResponse::class.java)
-                errorCode = errorResponse.code
-                errorMessage = errorResponse.message
-                Log.e("API Error", "Code: $errorCode, Message: $errorMessage")
+                httpExceptionCode = errorResponse.code
+                exceptionMessage = errorResponse.message
+                Log.e("API Error", "Code: $httpExceptionCode, Message: $exceptionMessage")
             } catch (jsonException: Exception) {
                 Log.e(
                     "API Error",
@@ -32,20 +33,20 @@ object ErrorUtils {
         }
 
         return Result.Error(
-            message = errorMessage,
-            errorCode = errorCode,
-            errorType = errorType
+            message = exceptionMessage,
+            responseType = responseType,
+            httpExceptionCode = httpExceptionCode,
+            exceptionType = exceptionType
         )
     }
 
-
-    private fun Int.toErrorType(): ErrorType {
+    private fun Int.exceptionType(): ExceptionType {
         return when (this) {
-            400 -> ErrorType.BAD_REQUEST_ERROR
-            401 -> ErrorType.AUTHENTICATION_ERROR
-            404 -> ErrorType.RESOURCE_NOT_FOUND
-            500 -> ErrorType.SERVER_ERROR
-            else -> ErrorType.HTTP_ERROR
+            400 -> ExceptionType.BAD_REQUEST_ERROR
+            401 -> ExceptionType.AUTHENTICATION_ERROR
+            404 -> ExceptionType.RESOURCE_NOT_FOUND
+            500 -> ExceptionType.SERVER_ERROR
+            else -> ExceptionType.HTTP_ERROR
         }
     }
 }

@@ -1,16 +1,20 @@
 package com.pardess.directions.presentation
 
-import com.pardess.directions.data.ErrorType
+import com.pardess.directions.data.ExceptionType
+import com.pardess.directions.data.ResponseType
 
 sealed class DataState {
 
-    class Ready : DataState()
+    data object Ready : DataState()
 
-    class Loading : DataState()
+    data class Success(val responseType: ResponseType) : DataState()
 
-    data class Success(val successType: SuccessType) : DataState()
-
-    data class Error(val message: String, val errorCode: Int? = 0, val errorType: ErrorType) :
+    data class Error(
+        val message: String,
+        val responseType: ResponseType,
+        val httpExceptionCode: Int? = 0,
+        val exceptionType: ExceptionType
+    ) :
         DataState()
 }
 

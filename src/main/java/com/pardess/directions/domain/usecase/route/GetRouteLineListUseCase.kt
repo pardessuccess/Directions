@@ -12,7 +12,7 @@ class GetRouteLineListUseCase @Inject constructor(
         origin: String,
         destination: String
     ): Result<List<RouteLine>> {
-        return kakaoApiRepository.getRouteLines(
+        return kakaoApiRepository.getRouteLineList(
             origin = origin,
             destination = destination
         )
