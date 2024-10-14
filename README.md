@@ -1,90 +1,83 @@
-Clean Architecture 패턴으로 구성되어 있습니다.
+카카오 길잡이
 
-data
+카카오 길잡이 애플리케이션은 Kakao Map SDK를 활용하여 내비게이션 기능을 제공하는 Android 애플리케이션입니다. 
+사용자는 경로 정보, 거리 및 예상 소요 시간을 간편하게 확인할 수 있습니다. 
+이 애플리케이션은 MVVM 아키텍처 패턴을 따르며 Jetpack Compose, Hilt 의존성 주입, Retrofit 등을 활용하여 개발되었습니다.
 
-- di
-1. ApiModule
-KakaoApiRespository에 의존성 주입
-2. NetworkModule
-KakaoApi, KakaoApiInstance, okHttp3 등 네트워크 관련 클래스 의존성 주입
+외부 라이브러리 : KakaoMap, Hilt, Retrofit, OkHttp3, Splash Api, Logger
 
-- mapper
-data entity -> domain model 로 데이터를 변환하여, 매핑
-1. DataMapper
-fun mapToWayLine()
-경로 좌표들을 받아와, Latitude, Longitude로 변환한 뒤, 리스트로 매핑해줍니다. 또한
-String 값으로 넘어온 도로 상태를 Enum Class TrafficState를 통기 분기하여 매핑합니다.
+주요 기능
 
-fun mapToRouteInfo()
-초 단위로 받아온 소요 시간, m 단위로 받아온 거리를 시간, 분, 초 단위로 분기하여 매핑합니다.
+1. 클린 아키텍쳐
 
-- network
-KakaoApi
-모든 함수들의 @Header에는 Authorization ("KAKAO_MOBILITY_KEY")이 자동으로 달려있습니다.
-OkHttp를 통해 설정해주었습니다.
+Data 레이어: 네트워크 요청 등을 관리합니다. Retrofit을 사용하여 데이터를 가져오고, Gson과 DataMapper를 사용해 데이터를 파싱합니다.
 
-- repository
-KakaoApiRepositoryImpl 구현체가 있습니다.
-suspend를 통해 코루틴으로 값을 받아오고, Result 에 Success, Error로 분기하여 매핑해줍니다.
-Http 에러 종류에 따라 다른 값을 에러에 넣고 저장합니다.
+Domain 레이어: 비즈니스 로직에서 사용되는 모델과 유스 케이스를 담고 있으며, 앱의 비즈니스 로직을 처리합니다.
 
-- response
-Https 통신을 통해 받아온 Dto 및 데이터를 저장하는 곳 입니다.
-  
-- util
-다양한 종류의 Exception을 분기해 Result.Error 로 리턴합니다.
+Presentation 레이어: UI 구성 요소 및 뷰 모델을 포함합니다. MainActivity가 앱의 진입점이며, Jetpack Compose로 UI를 구성합니다.
 
-- Result.kt
-Success, Error
+2. Http 통신
 
-domain
+서버와의 통신을 위해 Retrofit을 사용하였으며, OkHttp3를 통해 효율적으로 REST API 통신을 구현했습니다.
 
-- model
-- repository
-- usecase
+Interceptor를 활용하여 "Authorization" 헤더를 자동으로 주입하고, 네트워크 지연 테스트, 재시도(Retry), 로깅 및 연결 타임아웃(connectTimeout)을 설정했습니다.
 
-presentation
+서버에서 받은 데이터를 Coroutine으로 비동기 수신하고, Gson을 활용해 Json 데이터를 파싱하여 성공(Success) 및 오류(Error) 처리를 했습니다.
 
-- component
-AlertDialog
+Entity 데이터를 비즈니스 로직에서 사용할 모델로 변환하기 위해 DataMapper를 사용했습니다.
 
-- main
-DirectionApp - 컴포즈 메인
-RouteBottomSheet - 출발지/목적지를 담고 있는 정보들을 담고 있는 BottomSheet
-RouteInfoOverlay - 경로 정보를 담고 있는 뷰
-SearchSection - 출발지, 목적지를 담고 있는 섹션
+3. 의존성 주입
 
-- mapview
-KakaoMapView 카카오맵 뷰
-MapViewLifecycle - 맵뷰의 생명주기를 관리
+Dagger 기반의 경량 프레임워크인 Hilt를 활용하여 자동으로 의존성을 주입했습니다. 
+Retrofit, OkHttp3, Repository, KakaoApi 등을 Hilt로 주입하여 객체 간의 결합도를 낮추었습니다.
 
-- util
+4. Jetpack Compose, MVVM
+Jetpack Compose를 활용하여, MVVM 을 구현하였습니다.
+Model(Repository) <-> ViewModel <-> UI(Jetpack Compose UI)
 
-- viewmodel
-- ui.theme
+- UI와 로직을 분리하여 유지보수성을 높였습니다.
+- 데이터 변화에 따른 UI를 자동으로 갱신하며, remember와 State를 통해 간편하게 상태를 관리했습니다.
 
-Kakaoapi에서
+5. Kakao Map 설계
 
-총 세 가지의 함수를 호출하고 받아옵니다.
+Kakao Map을 활용하여 지도를 표시하고 경로를 그려주었습니다.
 
-출발지 / 도착지 리스트 호출
-경로를 담은 데이터 (경로 리스트, 도로 상황) 호출
-경로 거리, 소요 시간 호출
-받아온 값을 Resource 클래스를 통해, Success, Error 로 분기한 뒤, DataMapper로 dto -> domain 모델들과 매핑합니다.
+MapView는 MainActivity의 컨텍스트와 라이프사이클을 고려해 생성하였으며, rememberMapViewWithLifecycle을 사용해 라이프사이클 이벤트(onResume, onPause, onDestroy)를 처리했습니다.
 
-출발지 / 도착지 리스트
-경로를 담은 데이터 (경로 리스트, 도로 상황)
-경로 거리, 소요 시간
-를 모두 DirectionViewModel에 담고, mutableStateOf에서 변화하는 값들을 관찰하여 대응합니다.
+서버에서 받은 데이터를 바탕으로 DrawRouteLineUseCase와 SetLabelWithTextUseCase를 통해 맵에 경로(RouteLine)와 라벨(Label)을 그렸습니다.
 
-NewActivity를 메인으로 한 One Activity 구조입니다. 모든 데이터들은 DirectionViewModel에서 다루고 있습니다.
+6. Utils, DataMapper
 
-KakaoMapView에서는 Compose로 구현된 카카오맵이 있습니다.
+여러 코틀린 함수를 사용해 데이터를 처리하여, 비즈니스 로직에서 간단히 값만 가져와 사용할 수 있도록 하였습니다.
+haversine: 두 지점 사이의 직선 거리를 계산하는 함수로, 하버사인 공식을 사용합니다.
 
-drawRouteLine 함수를 통해, 지도에 목적지, 도착지의 라벨과 경로를 그려줍니다.
+7. Constants, BuildConfig
 
-DirectionApp 에서 NavigateInfoOverlay에서는 경로 거리, 소요 시간, 직선 거리를 적어줍니다. BottomSheetSection에서는 ModalBottomSheet 이 있고, 출발지 / 도착지 리스트를 나타냅니다.
+Constants 객체에 API 키와 기본 URL 등 애플리케이션 전체에서 사용되는 상수를 관리했습니다.
 
-사용기술 : Kakaomap, Retrofit, Okhttp3, Coroutine, Clean Architecture, Hilt, MVVM
+API 키는 local.properties 파일에 기록하고, 빌드 과정에서 BuildConfig에서만 참조할 수 있도록 했습니다.
 
-*사용하지 않는 코드들은 not_use 패키지에 넣어져 있습니다.
+8. Result, DataState
+
+sealed 클래스를 활용하여 상태를 Success, Error, Ready(DataState)로 나누어 앱의 상태를 구분하였습니다.
+
+Ready: 시스템이 네트워크 호출 준비가 되었음을 나타냅니다.
+Success: 응답 타입을 포함하는 성공적인 네트워크 응답을 나타냅니다.
+Error: 오류 메시지, 응답 타입, HTTP 예외 코드, 예외 타입을 포함하는 네트워크 호출의 오류를 나타냅니다.
+
+시작하기
+
+리포지토리 클론: 프로젝트를 로컬 환경으로 클론합니다.
+
+API 키 설정: local.properties 파일을 생성하고 Kakao Map 및 Mobility API 키를 추가합니다.
+
+빌드 및 실행: Android Studio에서 프로젝트를 열고, 에뮬레이터나 실제 기기에서 앱을 빌드하고 실행합니다.
+
+사용 방법
+
+앱 실행: Android 기기에서 Directions 앱을 엽니다.
+
+지도 보기: 메인 화면에서 Kakao 지도가 표시됩니다.
+
+경로 정보 확인: 앱과 상호작용하여 경로 정보(거리 및 예상 소요 시간 등)를 확인할 수 있습니다.
+
