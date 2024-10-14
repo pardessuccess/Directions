@@ -10,18 +10,18 @@ import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.route.RouteLineSegment
-import com.orhanobut.logger.Logger
+import com.pardess.directions.domain.model.common.DataState
+import com.pardess.directions.domain.model.common.ExceptionType
 import com.pardess.directions.domain.model.common.ResponseType
 import com.pardess.directions.domain.model.common.Result
-import com.pardess.directions.domain.model.route_list.Route
 import com.pardess.directions.domain.model.route_info.RouteInfo
 import com.pardess.directions.domain.model.route_line_list.RouteLine
-import com.pardess.directions.domain.usecase.route_info.GetRouteInfoUseCase
-import com.pardess.directions.domain.usecase.route_list.GetRouteListUseCase
+import com.pardess.directions.domain.model.route_list.Route
 import com.pardess.directions.domain.usecase.mapview.DrawRouteLineUseCase
 import com.pardess.directions.domain.usecase.mapview.SetLabelWithTextUseCase
+import com.pardess.directions.domain.usecase.route_info.GetRouteInfoUseCase
 import com.pardess.directions.domain.usecase.route_line_list.GetRouteLineListUseCase
-import com.pardess.directions.presentation.DataState
+import com.pardess.directions.domain.usecase.route_list.GetRouteListUseCase
 import com.pardess.directions.presentation.util.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -36,15 +36,70 @@ class DirectionViewModel @Inject constructor(
     private val drawRouteLineUseCase: DrawRouteLineUseCase,
     private val setLabelWithTextUseCase: SetLabelWithTextUseCase,
 ) : ViewModel() {
-    var isRouteListLoading by mutableStateOf(false)
+
+    // RouteList 출발지,목적지 리스트
+    var route by mutableStateOf(Route("", ""))
         private set
 
+    var routeList by mutableStateOf<List<Route>>(emptyList())
+        private set
+
+    // RouteInfo 경로 시간, 거리 정보
+    var routeInfo by mutableStateOf(RouteInfo(0, 0, 0, 0))
+        private set
+
+    // RouteLineList 경로 라인 정보
+    var routeLineList by mutableStateOf<List<RouteLine>>(emptyList())
+        private set
+
+    // 직선 거리
+    var straightDistance by mutableIntStateOf(0)
+        private set
+
+    // 로딩 상태
+    var isRouteListLoading by mutableStateOf(false)
+        private set
+    var isRouteInfoLoading by mutableStateOf(false)
+        private set
+    var isRouteLineListLoading by mutableStateOf(false)
+        private set
+
+    // 에러 코드 및 메시지
+    var errorCodeResult by mutableStateOf(Triple("", "", ""))
+    var errorMessageResult by mutableStateOf(Triple("", "", ""))
+
+    // API 호출 성공 여부
+    var isRouteListSuccess by mutableStateOf(false)
+    var isRouteInfoSuccess by mutableStateOf(false)
+    var isRouteLineListSuccess by mutableStateOf(false)
+
+    // DataState 네트워크 호출 데이터 상태
+    var dataState by mutableStateOf<DataState>(DataState.Ready)
+
+    // 출발지,목적지 리스트에서 선택된 index
+    private var routeListIndex by mutableIntStateOf(-1)
+
     init {
+        route = Route("", "")
+        routeInfo = RouteInfo(0, 0, 0, 0)
+        isRouteInfoLoading = false
+        straightDistance = 0
+        isRouteListLoading = false
+        isRouteLineListLoading = false
+        routeList = emptyList()
+        routeLineList = emptyList()
+        dataState = DataState.Ready
+        routeListIndex = -1
+        errorCodeResult = Triple("", "", "")
+        errorMessageResult = Triple("", "", "")
+        isRouteListSuccess = false
+        isRouteInfoSuccess = false
+        isRouteLineListSuccess = false
         updateRouteList()
     }
 
     // RouteLineSegmentList 경로 라인 리스트
-    var routeLineSegmentList by mutableStateOf(listOf<RouteLineSegment>())
+    private var routeLineSegmentList by mutableStateOf(listOf<RouteLineSegment>())
         set
 
     // RouteLineSegmentList 변환 함수
@@ -54,13 +109,10 @@ class DirectionViewModel @Inject constructor(
 
     //카카오맵 객체 및 RouteLine, RouteLineLayer, LabelLayer 객체
     private var kakaoMap by mutableStateOf<KakaoMap?>(null)
-
     var multiStyleLine by mutableStateOf<com.kakao.vectormap.route.RouteLine?>(null)
         private set
-
     var routeLineLayer by mutableStateOf<com.kakao.vectormap.route.RouteLineLayer?>(null)
         private set
-
     var labelLayer by mutableStateOf<com.kakao.vectormap.label.LabelLayer?>(null)
         private set
 
@@ -120,13 +172,10 @@ class DirectionViewModel @Inject constructor(
         )
     }
 
-    // 출발지,목적지 리스트에서 선택된 index
-    private var routeListIndex by mutableIntStateOf(-1)
-
     // 출발지,목적지 리스트 선택 함수
     fun routeSelected(index: Int) {
         routeListIndex = index
-        val route = routeList[routeListIndex]
+        route = routeList[routeListIndex]
         updateRouteInfo(
             route.origin, route.destination,
         )
@@ -135,22 +184,12 @@ class DirectionViewModel @Inject constructor(
         )
     }
 
-    // DataState 네트워크 호출 데이터 상태
-    var dataState by mutableStateOf<DataState>(DataState.Ready)
-
-    // RouteList 출발지,목적지 리스트
-    var route by mutableStateOf(Route("", ""))
-        private set
-
-    var routeList by mutableStateOf<List<Route>>(emptyList())
-        private set
-
-    var isRouteListSuccess by mutableStateOf(false)
-        private set
-
     // RouteList 출발지,목적지 리스트 호출 함수
     fun updateRouteList() = viewModelScope.launch {
         isRouteListLoading = true
+        isRouteListSuccess = false
+        errorCodeResult = Triple("", errorCodeResult.second, errorCodeResult.third)
+        errorMessageResult = Triple("", errorMessageResult.second, errorMessageResult.third)
         val data = getRouteListUseCase()
         if (data is Result.Success) {
             routeList = data.data
@@ -160,58 +199,39 @@ class DirectionViewModel @Inject constructor(
             isRouteListSuccess = true
         } else if (data is Result.Error) {
             handleError(data)
-            isRouteListSuccess = false
         }
         isRouteListLoading = false
     }
 
-    // RouteInfo 경로 시간, 거리 정보
-    var routeInfo by mutableStateOf(RouteInfo(0, 0, 0, 0))
-        private set
-
-    var isRouteInfoLoading by mutableStateOf(false)
-        private set
-
-    var isRouteInfoSuccess by mutableStateOf(false)
-        private set
 
     // RouteInfo 경로 시간, 거리 정보 호출 함수
     private fun updateRouteInfo(origin: String, destination: String) = viewModelScope.launch {
         isRouteInfoLoading = true
+        isRouteInfoSuccess = false
+        errorCodeResult = Triple(errorCodeResult.first, "", errorCodeResult.third)
+        errorMessageResult = Triple(errorMessageResult.first, "", errorMessageResult.third)
         val data = getRouteInfoUseCase(origin = origin, destination = destination)
-        Logger.d(data.toString())
         route = Route(origin, destination)
         if (data is Result.Success) {
             routeInfo = data.data
-            isRouteInfoSuccess = true
             dataState = DataState.Success(
                 responseType = data.responseType
             )
+            isRouteInfoSuccess = true
         } else if (data is Result.Error) {
-            isRouteInfoSuccess = false
             handleError(data)
         }
         isRouteInfoLoading = false
     }
 
-    // RouteLineList 경로 라인 정보
-    var routeLineList by mutableStateOf<List<RouteLine>>(emptyList())
-        private set
-
-    var straightDistance by mutableIntStateOf(0)
-        private set
-
-    var isRouteLineListSuccess by mutableStateOf(false)
-        private set
-
-    var isRouteLineListLoading by mutableStateOf(false)
-        private set
 
     // RouteLineList 경로 리스트 호출 함수
     private fun updateRouteLineList(origin: String, destination: String) = viewModelScope.launch {
         isRouteLineListLoading = true
+        isRouteLineListSuccess = false
+        errorCodeResult = Triple(errorCodeResult.first, errorCodeResult.second, "")
+        errorMessageResult = Triple(errorMessageResult.first, errorMessageResult.second, "")
         val data = getRouteLineListUseCase(origin = origin, destination = destination)
-        Logger.d(data.toString())
         if (data is Result.Success) {
             routeLineList = data.data
             straightDistance = Utils.haversine(
@@ -224,33 +244,72 @@ class DirectionViewModel @Inject constructor(
             )
         } else if (data is Result.Error) {
             handleError(data)
-            isRouteLineListSuccess = false
         }
         isRouteLineListLoading = false
     }
 
     // 에러 처리 함수
     private fun handleError(error: Result.Error<*>) {
-        when (error.responseType as ResponseType) {
+        if (error.exceptionType == ExceptionType.UNKNOWN_ERROR) {
+            errorCodeResult = Triple(
+                "", "", ""
+            )
+            errorMessageResult = Triple(
+                "", "", ""
+            )
+        }
+        when (error.responseType) {
             ResponseType.ROUTE_LIST -> {
-                // Route 리스트 관련 에러 처리
-                routeList = emptyList()
+                errorCodeResult =
+                    Triple(
+                        errorCodeResult.first + error.httpExceptionCode,
+                        errorCodeResult.second,
+                        errorCodeResult.third
+                    )
+                errorMessageResult =
+                    Triple(
+                        errorMessageResult.first + error.message,
+                        errorMessageResult.second,
+                        errorMessageResult.third
+                    )
             }
 
             ResponseType.ROUTE_INFO -> {
                 // Route 정보 관련 에러 처리
-                routeLineList = emptyList()
-                routeInfo = RouteInfo(0, 0, 0, 0)
-                straightDistance = 0
+                errorCodeResult =
+                    Triple(
+                        errorCodeResult.first,
+                        errorCodeResult.second + error.httpExceptionCode,
+                        errorCodeResult.third
+                    )
+                errorMessageResult =
+                    Triple(
+                        errorMessageResult.first,
+                        errorMessageResult.second + error.message,
+                        errorMessageResult.third
+                    )
             }
 
             ResponseType.ROUTE_LINE_LIST -> {
                 // Route 라인 리스트 관련 에러 처리
-                routeLineList = emptyList()
-                routeInfo = RouteInfo(0, 0, 0, 0)
-                straightDistance = 0
+                errorCodeResult =
+                    Triple(
+                        errorCodeResult.first,
+                        errorCodeResult.second,
+                        errorCodeResult.third + error.httpExceptionCode
+                    )
+                errorMessageResult =
+                    Triple(
+                        errorMessageResult.first,
+                        errorMessageResult.second,
+                        errorMessageResult.third + error.message
+                    )
             }
         }
+        routeLineList = emptyList()
+        routeInfo = RouteInfo(0, 0, 0, 0)
+        straightDistance = 0
+
         dataState = DataState.Error(
             message = error.message,
             responseType = error.responseType,

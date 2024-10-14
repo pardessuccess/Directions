@@ -67,7 +67,7 @@ object NetworkModule {
 
         // 테스트 목적으로 지연 시간을 추가하는 인터셉터 설정
         val delayForTestInterceptor = Interceptor { chain ->
-//            Thread.sleep(1000)
+            Thread.sleep(800)
             chain.proceed(chain.request())
         }
 
@@ -78,7 +78,7 @@ object NetworkModule {
             .addInterceptor(RetryInterceptor(3))
             .addInterceptor(headerInterceptor)
             .addInterceptor(loggingInterceptor)
-            .addInterceptor(delayForTestInterceptor)
+//            .addInterceptor(delayForTestInterceptor)
             .build()
     }
 

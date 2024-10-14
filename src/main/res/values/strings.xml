@@ -23,4 +23,7 @@
     <string name="route_line_fail_message">경로 조회에 실패했습니다.</string>
     <string name="route_info_fail_message">정보 조회에 실패했습니다.</string>
     <string name="ok_text">확인</string>
+    <string name="get_route_list_text">경로 리스트 조회</string>
+    <string name="get_route_info_text">정보 조회</string>
+    <string name="get_route_line_list_text">경로 조회</string>
 </resources>

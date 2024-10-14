@@ -11,8 +11,8 @@ import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import com.pardess.directions.R
 import com.pardess.directions.domain.model.common.ResponseType
-import com.pardess.directions.presentation.DataState
-import com.pardess.directions.presentation.DataState.Success
+import com.pardess.directions.domain.model.common.DataState
+import com.pardess.directions.domain.model.common.DataState.Success
 import com.pardess.directions.presentation.util.Utils.convertToRouteSegmentList
 import com.pardess.directions.presentation.viewmodel.DirectionViewModel
 
@@ -24,26 +24,24 @@ fun KakaoMapView(
     mapView: MapView,
 ) {
     val context = LocalContext.current
-
-    val routeLineList = viewModel.routeLineList
     val dateState = viewModel.dataState
 
-    if (routeLineList.isNotEmpty()) {
-        if (dateState is Success && dateState.responseType == ResponseType.ROUTE_LINE_LIST) {
-            viewModel.dataState = DataState.Ready
-            viewModel.convertToRouteSegmentList(
-                viewModel.routeLineList.convertToRouteSegmentList(context)
-            )
-            viewModel.drawRouteLine()
-            viewModel.setLabelWithText(
-                originLabelId = context.getString(R.string.origin_label_id),
-                originLabelText = context.getString(R.string.origin_label_text),
-                destinationLabelId = context.getString(R.string.destination_label_id),
-                destinationLabelText = context.getString(R.string.destination_label_text),
-            )
-        }
+    // 경로 리스트, 경로 정보, 경로 라인 리스트가 모두 성공적으로 로드되었을 때 지도에 라벨, 라인을 그려줌
+    if (dateState is Success && dateState.responseType == ResponseType.ROUTE_LINE_LIST && viewModel.isRouteLineListSuccess && viewModel.isRouteInfoSuccess) {
+        viewModel.dataState = DataState.Ready
+        viewModel.convertToRouteSegmentList(
+            viewModel.routeLineList.convertToRouteSegmentList(context)
+        )
+        viewModel.drawRouteLine()
+        viewModel.setLabelWithText(
+            originLabelId = context.getString(R.string.origin_label_id),
+            originLabelText = context.getString(R.string.origin_label_text),
+            destinationLabelId = context.getString(R.string.destination_label_id),
+            destinationLabelText = context.getString(R.string.destination_label_text),
+        )
     }
 
+    // 오류 발생 시 지도에 표시된 레이어 제거
     if (dateState is DataState.Error) {
         viewModel.labelLayer?.let {
             it.remove(it.getLabel(context.getString(R.string.origin_label_id)))

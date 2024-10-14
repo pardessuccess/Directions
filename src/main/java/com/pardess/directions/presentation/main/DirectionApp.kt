@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.pardess.directions.presentation.DataState
 import com.pardess.directions.presentation.component.ErrorAlertDialog
 import com.pardess.directions.presentation.mapview.KakaoMapView
 import com.pardess.directions.presentation.mapview.rememberMapViewWithLifecycle
@@ -45,7 +44,6 @@ fun DirectionApp(
     isLoading =
         viewModel.isRouteListLoading || viewModel.isRouteInfoLoading || viewModel.isRouteLineListLoading
 
-
     DirectionsTheme {
         Surface {
 
@@ -58,22 +56,20 @@ fun DirectionApp(
 
             val routeList = viewModel.routeList
             val routeInfo = viewModel.routeInfo
-            val dataState = viewModel.dataState
 
+            var errorCheck by remember { mutableStateOf(false) }
 
-            // 데이터 상태에 따른 처리
-            when (dataState) {
-                is DataState.Success -> {
-                    if (viewModel.isRouteInfoSuccess && viewModel.isRouteLineListSuccess) {
-                        showBottomSheet = false
-                    }
-                }
+            errorCheck =
+                viewModel.errorCodeResult.first.isNotEmpty() || viewModel.errorCodeResult.second.isNotEmpty() || viewModel.errorCodeResult.third.isNotEmpty()
 
-                is DataState.Error -> {
+            if (errorCheck) {
+                if (!showErrorDialog) {
                     showErrorDialog = true
                 }
+            }
 
-                else -> {}
+            if (viewModel.isRouteListSuccess && viewModel.isRouteLineListSuccess && viewModel.isRouteInfoSuccess) {
+                showBottomSheet = false
             }
 
             Scaffold(
@@ -114,13 +110,13 @@ fun DirectionApp(
                     if (showErrorDialog) {
                         ErrorAlertDialog(
                             route = viewModel.route,
-                            dataState = dataState as DataState.Error,
+                            errorCode = viewModel.errorCodeResult,
+                            errorMessage = viewModel.errorMessageResult,
                             isRouteListSuccess = viewModel.isRouteListSuccess,
-                            isRouteInfoSuccess = viewModel.isRouteInfoSuccess,
-                            isRouteLineListSuccess = viewModel.isRouteLineListSuccess,
                             onDismiss = {
-                                viewModel.dataState = DataState.Ready
                                 showErrorDialog = false
+                                viewModel.errorCodeResult = Triple("", "", "")
+                                viewModel.errorMessageResult = Triple("", "", "")
                             }
                         )
                     }

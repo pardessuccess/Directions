@@ -1,7 +1,4 @@
-package com.pardess.directions.presentation
-
-import com.pardess.directions.domain.model.common.ExceptionType
-import com.pardess.directions.domain.model.common.ResponseType
+package com.pardess.directions.domain.model.common
 
 // 네트워크 호출 등의 상태를 나타내는 sealed 클래스
 sealed class DataState {
@@ -16,7 +13,7 @@ sealed class DataState {
     data class Error(
         val message: String, // 에러 메시지
         val responseType: ResponseType, // 응답 타입
-        val httpExceptionCode: Int? = null, // HTTP 예외 코드
+        val httpExceptionCode: Int = 0, // HTTP 예외 코드
         val exceptionType: ExceptionType // 예외 타입
     ) : DataState()
 }
