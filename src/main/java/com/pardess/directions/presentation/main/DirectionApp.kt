@@ -1,27 +1,17 @@
 package com.pardess.directions.presentation.main
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,14 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.kakao.vectormap.MapView
-import com.pardess.directions.R
 import com.pardess.directions.presentation.DataState
 import com.pardess.directions.presentation.component.ErrorAlertDialog
 import com.pardess.directions.presentation.mapview.KakaoMapView
@@ -45,34 +28,29 @@ import com.pardess.directions.presentation.mapview.rememberMapViewWithLifecycle
 import com.pardess.directions.presentation.ui.theme.DirectionsTheme
 import com.pardess.directions.presentation.viewmodel.DirectionViewModel
 
+
+// Direction 앱의 메인 화면을 구성하는 컴포저블 함수
 @SuppressLint("PermissionLaunchedDuringComposition")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DirectionApp(
     viewModel: DirectionViewModel,
     context: Context,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-
     val mapView = rememberMapViewWithLifecycle(context, lifecycleOwner)
 
-    val locationPermissionsState = rememberMultiplePermissionsState(
-        listOf(
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-        )
-    )
+    // 로딩 상태 설정
+    var isLoading by remember { mutableStateOf(false) }
+    isLoading =
+        viewModel.isRouteListLoading || viewModel.isRouteInfoLoading || viewModel.isRouteLineListLoading
 
-    var locationPermission by remember { mutableStateOf(false) }
-    locationPermission = locationPermissionsState.allPermissionsGranted
-
-    LaunchedEffect(Unit) {
-        locationPermissionsState.launchMultiplePermissionRequest()
-    }
 
     DirectionsTheme {
         Surface {
+
             var showBottomSheet by remember { mutableStateOf(false) }
+            var showErrorDialog by remember { mutableStateOf(false) }
 
             val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -82,14 +60,15 @@ fun DirectionApp(
             val routeInfo = viewModel.routeInfo
             val dataState = viewModel.dataState
 
-            var showErrorDialog by remember { mutableStateOf(false) }
 
+            // 데이터 상태에 따른 처리
             when (dataState) {
                 is DataState.Success -> {
                     if (viewModel.isRouteInfoSuccess && viewModel.isRouteLineListSuccess) {
                         showBottomSheet = false
                     }
                 }
+
                 is DataState.Error -> {
                     showErrorDialog = true
                 }
@@ -99,55 +78,39 @@ fun DirectionApp(
 
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
-                floatingActionButton = {
-                    FloatingActionButton(
-                        onClick = {
-                            if (!locationPermission){
-                                Toast.makeText(context, "위치 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        shape = CircleShape,
-                        containerColor = Color.White,
-                        modifier = Modifier.padding(bottom = 5.dp)
-                    ) {
-                        if (locationPermission) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_location),
-                                tint = Color(0xFF3D73FA),
-                                contentDescription = "ic_location"
-                            )
-                        } else {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_no_location),
-                                tint = Color(0xFFBDBDBD).copy(0.5f),
-                                contentDescription = "ic_location"
-                            )
-                        }
-                    }
-                }
             ) {
-                Box(modifier = Modifier.padding(top = it.calculateTopPadding())) {
+                Box(
+                    modifier = Modifier.padding(
+                        top = it.calculateTopPadding(),
+                        bottom = it.calculateBottomPadding()
+                    )
+                ) {
                     Column(
-                        modifier = Modifier.align(Alignment.TopCenter)
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .fillMaxSize()
                     ) {
+                        // 검색 섹션
                         SearchSection(
                             viewModel = viewModel,
                             onClick = {
                                 showBottomSheet = true
                             }
                         )
+                        // Kakao 지도 뷰
                         KakaoMapView(
                             viewModel = viewModel,
                             mapView = mapView
                         )
                     }
+                    // 경로 정보 오버레이 표시
                     RouteInfoOverlay(
-                        viewModel = viewModel,
                         modifier = Modifier.align(Alignment.BottomStart),
                         straightDistance = straightDistance,
                         routeInfo = routeInfo
                     )
 
+                    // 오류 다이얼로그 표시
                     if (showErrorDialog) {
                         ErrorAlertDialog(
                             route = viewModel.route,
@@ -156,16 +119,19 @@ fun DirectionApp(
                             isRouteInfoSuccess = viewModel.isRouteInfoSuccess,
                             isRouteLineListSuccess = viewModel.isRouteLineListSuccess,
                             onDismiss = {
+                                viewModel.dataState = DataState.Ready
                                 showErrorDialog = false
                             }
                         )
                     }
 
+                    // 바텀 시트 표시
                     if (showBottomSheet) {
                         RouteBottomSheet(
                             viewModel = viewModel,
                             routeList = routeList,
                             bottomSheetState = bottomSheetState,
+                            isLoading = { isLoading },
                             setBottomSheetState = {
                                 showBottomSheet = false
                             }
@@ -173,18 +139,15 @@ fun DirectionApp(
                     }
                 }
             }
-            if (viewModel.isRouteListLoading || viewModel.isRouteInfoLoading || viewModel.isRouteLineListLoading) {
+            if (isLoading) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.3f)) // 배경 어둡게 처리
-                        .pointerInput(Unit) {} // 터치 이벤트 차단
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                        color = Color(0xFF5284FA)
-                    )
-                }
+                        .background(
+                            color = Color.White.copy(0.5f)
+                        )
+                        .pointerInput(Unit) {}
+                )
             }
         }
     }

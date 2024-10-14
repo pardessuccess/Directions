@@ -1,44 +1,39 @@
 package com.pardess.directions.domain.usecase.mapview
 
-import android.content.Context
 import com.kakao.vectormap.KakaoMap
-import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdateFactory
-import com.kakao.vectormap.label.LabelLayer
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
 import com.kakao.vectormap.route.RouteLineSegment
-import com.kakao.vectormap.route.RouteLineStyle
-import com.pardess.directions.R
-import com.pardess.directions.domain.model.RouteLine
-import com.pardess.directions.domain.model.TrafficState
+import com.pardess.directions.domain.model.route_line_list.RouteLine
+import com.pardess.directions.domain.model.route_line_list.TrafficState
+import com.pardess.directions.domain.repository.AppContextRepository
+import com.pardess.directions.presentation.util.Utils.convertToLatLngPoints
+import javax.inject.Inject
 
-lateinit var multiStyleLine: com.kakao.vectormap.route.RouteLine
-
-class DrawRouteLineUseCase(
-    private val context: Context,
-    private val kakaoMap: KakaoMap,
-    private val labelLayer: LabelLayer,
-    private val routeLineLayer: RouteLineLayer,
-    private val setLabelWithTextUseCase: SetLabelWithTextUseCase
+// 경로 라인을 그리는 유스케이스 클래스
+class DrawRouteLineUseCase @Inject constructor(
+    private val appContextRepository: AppContextRepository,
 ) {
 
-    fun execute(
+    operator fun invoke(
         routeLineList: List<RouteLine>,
-        origin: String,
-        destination: String
-    ) {
+        kakaoMap: KakaoMap,
+        routeLineLayer: RouteLineLayer?,
+        multiStyleLine: com.kakao.vectormap.route.RouteLine?,
+    ): com.kakao.vectormap.route.RouteLine? {
         val routeSegmentList = mutableListOf<RouteLineSegment>()
-        val pointsLatLng = routeLineList.flatMap { routeLines ->
-            routeLines.wayList
-        }.toTypedArray()
+        val pointsLatLng = routeLineList.convertToLatLngPoints()
 
-
-        if (::multiStyleLine.isInitialized){
-            routeLineLayer.remove(multiStyleLine)
+        // 기존의 라인 제거
+        multiStyleLine?.let { styleLine ->
+            multiStyleLine.lineId?.let { lineId ->
+                routeLineLayer?.remove(styleLine)
+            }
         }
 
+        // 각 경로에 대해 라인 스타일을 설정하고 세그먼트를 추가
         routeLineList.forEach {
             val style = when (it.trafficState) {
                 TrafficState.UNKNOWN -> TrafficState.UNKNOWN.styleRes
@@ -49,43 +44,26 @@ class DrawRouteLineUseCase(
                 TrafficState.BLOCK -> TrafficState.BLOCK.styleRes
             }
 
-            val routeLineStyle = RouteLineStyle.from(context, style)
-
+            val routeLineStyle = appContextRepository.setRouteLineStyle(style)
             routeSegmentList.add(
                 RouteLineSegment.from(
-                    it.wayList, routeLineStyle
+                    it.routeLine, routeLineStyle
                 )
             )
         }
 
+        // 경로 라인 옵션 생성
         val options = RouteLineOptions.from(
             routeSegmentList
         )
 
-        multiStyleLine = routeLineLayer.addRouteLine(options)
-
-
-        setLabelWithTextUseCase.execute(
-            context = context,
-            labelId = context.getString(R.string.origin_label_id),
-            text = context.getString(R.string.origin_label_text),
-            locationName = origin,
-            lat = routeSegmentList[0].lats[0],
-            lng = routeSegmentList[0].lngs[0]
-        )
-
-        setLabelWithTextUseCase.execute(
-            context = context,
-            labelId = context.getString(R.string.destination_label_id),
-            text = context.getString(R.string.destination_label_text),
-            locationName = destination,
-            lat = routeSegmentList.last().lats.last(),
-            lng = routeSegmentList.last().lngs.last()
-        )
-
+        // 카메라를 경로에 맞게 이동
         kakaoMap.moveCamera(
             CameraUpdateFactory.fitMapPoints(pointsLatLng, 250),
             CameraAnimation.from(1000, true, true)
         )
+
+        // 경로 라인 추가
+        return routeLineLayer?.addRouteLine(options)
     }
 }

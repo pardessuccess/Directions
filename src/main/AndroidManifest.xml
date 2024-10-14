@@ -4,9 +4,6 @@
     tools:ignore="LockedOrientationActivity">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:name=".DirectionsApplication"
@@ -25,39 +22,10 @@
             android:value="KAKAO_MAP_KEY" />
 
         <activity
-            android:name=".not_use.Test23Activity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.Directions">
-
-        </activity>
-
-        <activity
-            android:name=".not_use.MapActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-
-        </activity>
-
-<!--        <activity-->
-<!--            android:name=".not_use.TestActivity"-->
-<!--            android:exported="true"-->
-<!--            android:screenOrientation="portrait"-->
-<!--            android:theme="@style/Theme.AppCompat.NoActionBar">-->
-<!--            &lt;!&ndash;            <intent-filter>&ndash;&gt;-->
-<!--            &lt;!&ndash;                <action android:name="android.intent.action.MAIN" />&ndash;&gt;-->
-
-<!--            &lt;!&ndash;                <category android:name="android.intent.category.LAUNCHER" />&ndash;&gt;-->
-<!--            &lt;!&ndash;            </intent-filter>&ndash;&gt;-->
-<!--        </activity>-->
-
-        <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/Theme.Directions">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

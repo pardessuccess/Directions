@@ -19,13 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.pardess.directions.domain.model.RouteInfo
+import com.pardess.directions.domain.model.route_info.RouteInfo
+import com.pardess.directions.presentation.ui.theme.KakaoYellow
 import com.pardess.directions.presentation.util.Utils
 import com.pardess.directions.presentation.viewmodel.DirectionViewModel
 
+// 경로 정보를 오버레이로 표시하는 컴포저블 함수
 @Composable
 fun RouteInfoOverlay(
-    viewModel: DirectionViewModel,
     modifier: Modifier,
     straightDistance: Int,
     routeInfo: RouteInfo,
@@ -47,7 +48,7 @@ fun RouteInfoOverlay(
         Row {
             Text(
                 text = routeInfoPair.first,
-                color = Color(0xFFFFD700),
+                color = KakaoYellow,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -55,14 +56,14 @@ fun RouteInfoOverlay(
         Spacer(modifier = Modifier.height(5.dp))
         Text(
             text = routeInfoPair.second,
-            color = Color(0xFFFFD700),
+            color = KakaoYellow,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(5.dp))
         Text(
             text = Utils.meterWithComma("직선 거리", straightDistance),
-            color = Color(0xFFFFD700),
+            color = KakaoYellow,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
         )

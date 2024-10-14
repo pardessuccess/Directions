@@ -1,63 +1,58 @@
 package com.pardess.directions.domain.usecase.mapview
 
-import android.content.Context
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.LatLng
-import com.kakao.vectormap.camera.CameraAnimation
-import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelLayer
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTextBuilder
-import com.kakao.vectormap.label.LabelTextStyle
 import com.kakao.vectormap.label.LabelTransition
 import com.kakao.vectormap.label.Transition
 import com.pardess.directions.R
+import com.pardess.directions.domain.repository.AppContextRepository
+import javax.inject.Inject
 
-class SetLabelWithTextUseCase(
-    private val kakaoMap: KakaoMap,
-    private val labelLayer: LabelLayer
+// 라벨과 텍스트를 설정하고 추가하는 유스케이스 클래스
+class SetLabelWithTextUseCase @Inject constructor(
+    private val appContextRepository: AppContextRepository,
 ) {
-    private val duration = 500
-
-    fun execute(
-        context: Context,
+    operator fun invoke(
+        kakaoMap: KakaoMap,
+        labelLayer: LabelLayer,
         labelId: String,
-        text: String,
-        locationName: String,
-        lat: Double,
-        lng: Double
+        labelText: String,
+        routeName: String,
+        latLng: LatLng,
     ) {
-
-        val pos = LatLng.from(lat, lng)
-
-        val marker = when (text) {
-            context.getString(R.string.origin_label_text) -> {
+        // 라벨 텍스트에 따른 마커 및 스타일 설정
+        val marker = when (labelText) {
+            appContextRepository.getStringResource(R.string.origin_label_text) -> {
                 Triple(
-                    R.drawable.blue_marker,
-                    LabelTextStyle.from(context, R.style.labelTextStyleBlack),
-                    LabelTextStyle.from(context, R.style.labelTextStyleBlue)
+                    R.drawable.img_blue_marker,
+                    appContextRepository.setLabelStyle(R.style.labelTextStyleBlack),
+                    appContextRepository.setLabelStyle(R.style.labelTextStyleBlue),
                 )
             }
 
-            context.getString(R.string.destination_label_text) -> {
+            appContextRepository.getStringResource(R.string.destination_label_text) -> {
                 Triple(
-                    R.drawable.pink_marker,
-                    LabelTextStyle.from(context, R.style.labelTextStyleBlack),
-                    LabelTextStyle.from(context, R.style.labelTextStyleRed)
+                    R.drawable.img_red_marker,
+                    appContextRepository.setLabelStyle(R.style.labelTextStyleBlack),
+                    appContextRepository.setLabelStyle(R.style.labelTextStyleRed),
                 )
             }
 
             else -> {
                 Triple(
-                    R.drawable.green_marker,
-                    LabelTextStyle.from(context, R.style.labelTextStyleBlack),
-                    LabelTextStyle.from(context, R.style.labelTextStyleBlue)
+                    R.drawable.img_green_marker,
+                    appContextRepository.setLabelStyle(R.style.labelTextStyleBlack),
+                    appContextRepository.setLabelStyle(R.style.labelTextStyleRed),
                 )
             }
         }
 
+        // 라벨 스타일 설정 및 추가
         val styles = kakaoMap.labelManager
             ?.addLabelStyles(
                 LabelStyles.from(
@@ -70,18 +65,15 @@ class SetLabelWithTextUseCase(
                         .setIconTransition(LabelTransition.from(Transition.None, Transition.None))
                 )
             )
+
         labelLayer.addLabel(
-            LabelOptions.from(labelId, pos).setStyles(styles)
+            LabelOptions.from(labelId, latLng).setStyles(styles)
                 .setTexts(
                     LabelTextBuilder().setTexts(
-                        text,
-                        locationName,
+                        labelText,
+                        routeName,
                     )
                 )
-        )
-        kakaoMap.moveCamera(
-            CameraUpdateFactory.newCenterPosition(pos, 15),
-            CameraAnimation.from(duration)
         )
     }
 }

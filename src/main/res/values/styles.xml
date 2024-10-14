@@ -14,7 +14,7 @@
         <item name="mapLineColor">@color/route_unknown</item>
         <item name="mapStrokeWidth">3</item>
         <item name="mapStrokeColor">#ffffff</item>
-        <item name="mapPatternImage">@drawable/route_pattern_arrow</item>
+        <item name="mapPatternImage">@drawable/img_route_pattern_arrow</item>
         <item name="mapDistance">16</item>
     </style>
 
@@ -24,7 +24,7 @@
         <item name="mapLineColor">@color/route_block</item>
         <item name="mapStrokeWidth">3</item>
         <item name="mapStrokeColor">#ffffff</item>
-        <item name="mapPatternImage">@drawable/route_pattern_arrow</item>
+        <item name="mapPatternImage">@drawable/img_route_pattern_arrow</item>
         <item name="mapDistance">16</item>
     </style>
 
@@ -33,7 +33,7 @@
         <item name="mapLineColor">@color/route_jam</item>
         <item name="mapStrokeWidth">3</item>
         <item name="mapStrokeColor">#ffffff</item>
-        <item name="mapPatternImage">@drawable/route_pattern_arrow</item>
+        <item name="mapPatternImage">@drawable/img_route_pattern_arrow</item>
         <item name="mapDistance">16</item>
     </style>
 
@@ -42,7 +42,7 @@
         <item name="mapLineColor">@color/route_delay</item>
         <item name="mapStrokeWidth">3</item>
         <item name="mapStrokeColor">#ffffff</item>
-        <item name="mapPatternImage">@drawable/route_pattern_arrow</item>
+        <item name="mapPatternImage">@drawable/img_route_pattern_arrow</item>
         <item name="mapDistance">16</item>
     </style>
 
@@ -51,7 +51,7 @@
         <item name="mapLineColor">@color/route_slow</item>
         <item name="mapStrokeWidth">3</item>
         <item name="mapStrokeColor">#ffffff</item>
-        <item name="mapPatternImage">@drawable/route_pattern_arrow</item>
+        <item name="mapPatternImage">@drawable/img_route_pattern_arrow</item>
         <item name="mapDistance">16</item>
     </style>
 
@@ -60,7 +60,7 @@
         <item name="mapLineColor">@color/route_normal</item>
         <item name="mapStrokeWidth">3</item>
         <item name="mapStrokeColor">#ffffff</item>
-        <item name="mapPatternImage">@drawable/route_pattern_arrow</item>
+        <item name="mapPatternImage">@drawable/img_route_pattern_arrow</item>
         <item name="mapDistance">16</item>
     </style>
 
@@ -80,17 +80,6 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="AirPlanePattern" parent="RouteLineStyle">
-        <item name="mapPatternImage">@drawable/route_pattern_long_dot</item>
-        <item name="mapSymbolImage">@drawable/route_pattern_long_airplane</item>
-        <item name="mapDistance">10</item>
-    </style>
-
-    <style name="BusPattern" parent="RouteLineStyle">
-        <item name="mapPatternImage">@drawable/route_pattern_long_dot</item>
-        <item name="mapSymbolImage">@drawable/route_pattern_long_bus</item>
-        <item name="mapDistance">10</item>
-    </style>
 
     <style name="SimpleRouteLineStyle" parent="RouteLineStyle">
         <item name="mapLineWidth">18.0</item>
@@ -111,7 +100,7 @@
         <item name="mapLineColor">#0597F2</item>
         <item name="mapStrokeWidth">3</item>
         <item name="mapStrokeColor">#ffffff</item>
-        <item name="mapPatternImage">@drawable/route_pattern_arrow</item>
+        <item name="mapPatternImage">@drawable/img_route_pattern_arrow</item>
         <item name="mapDistance">16</item>
     </style>
 
@@ -127,7 +116,7 @@
         <item name="mapLineColor">#F24607</item>
         <item name="mapStrokeWidth">3</item>
         <item name="mapStrokeColor">#ffffff</item>
-        <item name="mapPatternImage">@drawable/route_pattern_arrow</item>
+        <item name="mapPatternImage">@drawable/img_route_pattern_arrow</item>
         <item name="mapDistance">10</item>
     </style>
 
@@ -150,15 +139,10 @@
         <item name="mapLineColor">#49D907</item>
         <item name="mapStrokeWidth">3</item>
         <item name="mapStrokeColor">#ffffff</item>
-        <item name="mapPatternImage">@drawable/route_pattern_arrow</item>
+        <item name="mapPatternImage">@drawable/img_route_pattern_arrow</item>
         <item name="mapDistance">10</item>
     </style>
 
-    <style name="currentLocationStyle" parent="LabelStyle">
-        <item name="mapIconImage">@drawable/red_dot_marker</item>
-        <item name="mapIconAnchorX">0.5</item>
-        <item name="mapIconAnchorY">0.5</item>
-    </style>
 
     <style name="labelTextStyleRed" parent="LabelTextStyle">
         <item name="mapTextSize">32</item>
@@ -181,43 +165,4 @@
         <item name="mapTextStrokeColor">@android:color/white</item>
     </style>
 
-    <style name="cubic_in_out_animation">
-        <item name="repeatCount">10</item>
-        <item name="duration">3000</item>
-        <item name="interpolation">CubicInOut</item>
-        <item name="startAlpha">0.7</item>
-        <item name="endAlpha">0.3</item>
-        <item name="startRadius">0.0</item>
-        <item name="endRadius">100.0</item>
-    </style>
-
-    <style name="cubic_in_animation">
-        <item name="repeatCount">10</item>
-        <item name="duration">3000</item>
-        <item name="interpolation">CubicIn</item>
-        <item name="startAlpha">0.7</item>
-        <item name="endAlpha">0.0</item>
-        <item name="startRadius">0.0</item>
-        <item name="endRadius">100.0</item>
-    </style>
-
-    <style name="linear_animation">
-        <item name="repeatCount">10</item>
-        <item name="duration">3000</item>
-        <item name="interpolation">Linear</item>
-        <item name="startAlpha">0.0</item>
-        <item name="endAlpha">1.0</item>
-        <item name="startRadius">0.0</item>
-        <item name="endRadius">100.0</item>
-    </style>
-
-    <style name="cubic_out_animation">
-        <item name="repeatCount">10</item>
-        <item name="duration">3000</item>
-        <item name="interpolation">CubicOut</item>
-        <item name="startAlpha">0.0</item>
-        <item name="endAlpha">1.0</item>
-        <item name="startRadius">0.0</item>
-        <item name="endRadius">100.0</item>
-    </style>
 </resources>

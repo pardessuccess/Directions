@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -20,11 +19,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pardess.directions.R
+import com.pardess.directions.presentation.ui.theme.KakaoBlue
+import com.pardess.directions.presentation.ui.theme.LightBlue
+import com.pardess.directions.presentation.ui.theme.White
 import com.pardess.directions.presentation.viewmodel.DirectionViewModel
 
+// 검색 섹션을 구성하는 컴포저블 함수
 @Composable
 fun SearchSection(
     viewModel: DirectionViewModel,
@@ -35,7 +39,7 @@ fun SearchSection(
         modifier = modifier
             .fillMaxWidth()
             .height(130.dp)
-            .background(Color(0xFF3D73FA)),
+            .background(KakaoBlue),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -45,20 +49,20 @@ fun SearchSection(
         ) {
             Column(
                 modifier = Modifier
-                    .background(Color(0xFF5284FA), shape = RoundedCornerShape(5.dp))
+                    .background(LightBlue, shape = RoundedCornerShape(5.dp))
             ) {
                 var origin = viewModel.route.origin
                 var destination = viewModel.route.destination
                 val isEmpty = viewModel.route.origin.isEmpty()
 
-                var textColor = Color(0xFFFFFFFF)
+                var textColor = White
 
                 if (isEmpty) {
-                    origin = "출발지"
-                    destination = "도착지"
-                    textColor = Color(0xFFFFFFFF).copy(0.7f)
+                    origin = stringResource(R.string.hint_origin_text)
+                    destination = stringResource(R.string.hint_destination_text)
+                    textColor = White.copy(0.65f)
                 }
-
+                // 출발지 텍스트
                 Text(
                     text = origin, color = textColor,
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
@@ -68,8 +72,9 @@ fun SearchSection(
                     modifier = Modifier
                         .height(1.5.dp)
                         .fillMaxWidth()
-                        .background(Color(0xFF3D73FA))
+                        .background(KakaoBlue)
                 )
+                // 도착지 텍스트
                 Text(
                     text = destination, color = textColor,
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
@@ -77,6 +82,7 @@ fun SearchSection(
                 )
             }
         }
+        // 길찾기 버튼
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -84,7 +90,7 @@ fun SearchSection(
                     onClick()
                 }
                 .background(
-                    Color(0xFF5284FA),
+                    LightBlue,
                     shape = RoundedCornerShape(5.dp)
                 )
                 .padding(7.dp),
@@ -96,12 +102,12 @@ fun SearchSection(
                 Spacer(modifier = Modifier.height(1.dp))
                 Icon(
                     painter = painterResource(R.drawable.ic_direction),
-                    contentDescription = "ic_direction",
+                    contentDescription = stringResource(R.string.ic_direction_text),
                     tint = Color.White,
                     modifier = Modifier.size(48.dp)
                 )
                 Text(
-                    text = "길찾기",
+                    text = stringResource(R.string.find_route_button_text),
                     color = Color.White,
                     fontSize = 16.sp
                 )
