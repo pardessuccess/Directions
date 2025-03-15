@@ -81,3 +81,5 @@
 1. **앱 실행**: Android 기기에서 Directions 앱을 엽니다.
 2. **지도 보기**: 메인 화면에서 Kakao 지도가 표시됩니다.
 3. **경로 정보 확인**: 앱과 상호작용하여 경로 정보(거리 및 예상 소요 시간 등)를 확인할 수 있습니다.
+
+https://github.com/user-attachments/assets/b1a16c70-f0be-406c-9387-3d1f81046193
